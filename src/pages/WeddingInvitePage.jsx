@@ -6,7 +6,14 @@ import FloatingHeartTransition from '../components/FloatingHeartTransition'
 import InvitationHeroSection from '../components/InvitationHeroSection'
 import InviteSectionFallback from '../components/InviteSectionFallback'
 import useMobileScrollOptimizations from '../hooks/useMobileScrollOptimizations'
-import { preloadBelowFoldAssets } from '../utils/performance'
+import { runStagedInvitePreload } from '../utils/performance'
+
+const CELEBRATION_PRELOADS = [
+  '/engagement.png',
+  '/reception.png',
+  '/muhurutham.png',
+  '/4thsectionbg.jpeg',
+]
 
 const OurStory = lazy(() => import('../components/OurStory'))
 const WeddingCelebrationsSection = lazy(() => import('../components/WeddingCelebrationsSection'))
@@ -20,11 +27,16 @@ export default function WeddingInvitePage() {
   useMobileScrollOptimizations()
 
   useEffect(() => {
-    return preloadBelowFoldAssets()
+    return runStagedInvitePreload()
   }, [])
 
   return (
     <div className="invite-page relative min-h-screen overflow-x-clip bg-[#17090d] text-[#FDF6EC]">
+      <div className="invite-preload-cache" aria-hidden="true">
+        {CELEBRATION_PRELOADS.map((src) => (
+          <img key={src} src={src} alt="" decoding="async" loading="eager" />
+        ))}
+      </div>
       <BackgroundMusic />
       <motion.main
         className="invite-main relative z-20"

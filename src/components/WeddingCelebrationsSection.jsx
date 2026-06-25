@@ -662,7 +662,8 @@ export default function WeddingCelebrationsSection() {
                               <img
                                 src={event.imageSrc}
                                 alt={event.imageAlt}
-                                loading="lazy"
+                                loading="eager"
+                                decoding="async"
                                 className={`h-full w-full ${event.imagePosition} object-cover`}
                               />
                             </div>

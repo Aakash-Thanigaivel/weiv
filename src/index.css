@@ -101,6 +101,16 @@ html {
     contain-intrinsic-size: auto 100dvh;
   }
 
+  .invite-preload-cache {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    user-select: none;
+  }
+
   .story-strip-track {
     animation-duration: 20s;
   }
@@ -908,6 +918,11 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   text-shadow: 0 0 22px rgba(201, 168, 76, 0.4), 0 0 52px rgba(128, 61, 23, 0.28);
+}
+
+.cinematic-intro-line {
+  display: block;
+  will-change: transform, opacity, filter;
 }
 
 .cinematic-couple-heart {
