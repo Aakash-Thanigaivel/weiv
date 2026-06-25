@@ -58,7 +58,7 @@ export default function InvitationHeroSection() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.35 }}
-        className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center px-4 py-20 text-center"
+        className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center px-4 py-14 text-center sm:py-20"
       >
         <motion.p
           variants={blurReveal}
@@ -116,7 +116,7 @@ function LandingCountdownUnit({ value, label }) {
     <motion.div
       key={`landing-${label}-${formattedValue}`}
       data-sparkle="true"
-      className="interactive-glow rounded-xl border border-[rgba(201,168,76,0.3)] bg-[rgba(255,255,255,0.08)] p-2 md:backdrop-blur-md transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(201,168,76,0.22)] md:p-3"
+      className="interactive-glow rounded-xl border border-[rgba(201,168,76,0.3)] bg-[rgba(255,255,255,0.08)] p-2 transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_12px_30px_rgba(201,168,76,0.22)] md:backdrop-blur-md md:p-3"
       whileHover={{ y: -4, boxShadow: '0 14px 30px rgba(201,168,76,0.25)' }}
       transition={{ duration: 0.35, ease: cinematicEase }}
     >

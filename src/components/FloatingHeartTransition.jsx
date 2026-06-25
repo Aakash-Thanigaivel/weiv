@@ -4,7 +4,7 @@ const HEART_ASSET = '/heart.jpeg'
 
 const LAYER_CONFIG = {
   background: {
-    count: { mobile: 2, tablet: 3, desktop: 4 },
+    count: { mobile: 1, tablet: 3, desktop: 4 },
     size: [56, 100],
     opacity: [0.34, 0.48],
     // parallax: how much this layer moves per pixel of scroll velocity
@@ -13,7 +13,7 @@ const LAYER_CONFIG = {
     brightness: [1.24, 1.42],
   },
   mid: {
-    count: { mobile: 3, tablet: 4, desktop: 5 },
+    count: { mobile: 2, tablet: 4, desktop: 5 },
     size: [40, 72],
     opacity: [0.56, 0.72],
     parallax: 0.52,
@@ -21,7 +21,7 @@ const LAYER_CONFIG = {
     brightness: [1.36, 1.56],
   },
   foreground: {
-    count: { mobile: 3, tablet: 4, desktop: 4 },
+    count: { mobile: 2, tablet: 4, desktop: 4 },
     size: [28, 48],
     opacity: [0.78, 0.96],
     parallax: 0.9,
@@ -150,10 +150,30 @@ export default function FloatingHeartTransition() {
 
   useEffect(() => {
     let mounted = true
-    createTransparentHeart().then((asset) => {
-      if (mounted) setHeartAsset(asset)
-    })
-    return () => { mounted = false }
+    const hero = document.getElementById('hero')
+    if (!hero) return undefined
+
+    const startProcessing = () => {
+      createTransparentHeart().then((asset) => {
+        if (mounted) setHeartAsset(asset)
+      })
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return
+        startProcessing()
+        observer.disconnect()
+      },
+      { rootMargin: '180px 0px' },
+    )
+
+    observer.observe(hero)
+
+    return () => {
+      mounted = false
+      observer.disconnect()
+    }
   }, [])
 
   useEffect(() => {
@@ -161,7 +181,7 @@ export default function FloatingHeartTransition() {
     if (reduceMotion) return undefined
 
     const state = loopState.current
-    const vh = window.innerHeight
+    const vh = window.visualViewport?.height ?? window.innerHeight
 
     // Initialize per-heart positions spread across the full viewport height
     state.positions = hearts.map((h) => ({
@@ -189,7 +209,7 @@ export default function FloatingHeartTransition() {
       if (!hero) return false
 
       const heroRect = hero.getBoundingClientRect()
-      const viewportH = window.innerHeight
+      const viewportH = window.visualViewport?.height ?? window.innerHeight
 
       // If hero is fully below viewport, user is above hero in the car section.
       if (heroRect.top >= viewportH) return false
@@ -215,7 +235,7 @@ export default function FloatingHeartTransition() {
 
       const heroRect = hero.getBoundingClientRect()
       const storyRect = story ? story.getBoundingClientRect() : heroRect
-      const viewportH = window.innerHeight
+      const viewportH = window.visualViewport?.height ?? window.innerHeight
 
       // Top edge: where the hero section starts in the viewport (clamped to 0)
       const topClip = Math.max(0, Math.round(heroRect.top))
@@ -236,7 +256,7 @@ export default function FloatingHeartTransition() {
       state.velocity = state.velocity * 0.80 + rawDelta * 0.50
 
       const nowActive = checkActive()
-      const viewportH = window.innerHeight
+      const viewportH = window.visualViewport?.height ?? window.innerHeight
 
       // Clip hearts to the visible hero+story area every frame (sections are scrolling)
       if (nowActive) applyClip()

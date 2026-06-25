@@ -26,7 +26,7 @@ export default function SeeTheRouteSection() {
   return (
     <section
       ref={sectionRef}
-      className="relative isolate overflow-hidden"
+      className="invite-section-below-fold relative isolate overflow-hidden"
       aria-label="See the route"
     >
       <div className="relative h-[100dvh] min-h-[640px]">

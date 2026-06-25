@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { isMobileViewport } from '../utils/performance'
 
 const cinematicEase = [0.22, 1, 0.36, 1]
 
@@ -136,7 +137,7 @@ function generateCelebrationParticles(sectionHeight, isMobile = false) {
     return families[families.length - 1]
   }
 
-  return Array.from({ length: isMobile ? 20 : 72 }, (_, index) => {
+  return Array.from({ length: isMobile ? 12 : 72 }, (_, index) => {
     const family = pickFamily()
     const size = family.size[0] + Math.random() * (family.size[1] - family.size[0])
     const duration = 2.05 + Math.random() * 0.92
@@ -295,8 +296,8 @@ export default function WeddingCelebrationsSection() {
 
     if (window.innerWidth < 768) {
       window.setTimeout(() => {
-        articleRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      }, 120)
+        articleRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 80)
     }
 
     const nextBurst = {
@@ -329,14 +330,19 @@ export default function WeddingCelebrationsSection() {
     openTimeoutRef.current = window.setTimeout(() => {
       setBouncingScroll(null)
       triggerCinematicOpen(index)
-    }, 320)
+    }, 280)
   }
+
+  const visibleGoldDust = useMemo(
+    () => (isMobileViewport() ? goldDust.slice(0, 3) : goldDust),
+    [],
+  )
 
   return (
     <section
       ref={sectionRef}
       id="wedding-celebrations"
-      className="relative min-h-[100svh] overflow-hidden bg-cover bg-center bg-no-repeat py-24 md:py-28"
+      className="invite-section-below-fold relative min-h-[100dvh] overflow-hidden bg-cover bg-center bg-no-repeat py-16 md:py-28"
       style={{ backgroundImage: "url('/4thsectionbg.jpeg')" }}
       aria-label="Wedding Celebrations"
     >
@@ -387,7 +393,7 @@ export default function WeddingCelebrationsSection() {
         ) : null}
       </AnimatePresence>
 
-      {goldDust.map((dust, index) => (
+      {visibleGoldDust.map((dust, index) => (
         <motion.span
           key={`dust-${dust.left}-${dust.top}`}
           className="pointer-events-none absolute rounded-full bg-[#f3c776]/70 shadow-[0_0_10px_rgba(243,199,118,0.55)]"

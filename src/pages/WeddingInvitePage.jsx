@@ -1,41 +1,60 @@
+import { lazy, Suspense, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import BackgroundMusic from '../components/BackgroundMusic'
 import CinematicCarScrollSection from '../components/CinematicCarScrollSection'
 import FloatingHeartTransition from '../components/FloatingHeartTransition'
-import GroomsFamilySection from '../components/GroomsFamilySection'
 import InvitationHeroSection from '../components/InvitationHeroSection'
-import OurStory from '../components/OurStory'
-import RsvpParallaxSection from '../components/RsvpParallaxSection'
-import SeeTheRouteSection from '../components/SeeTheRouteSection'
-import WeddingCelebrationsSection from '../components/WeddingCelebrationsSection'
+import InviteSectionFallback from '../components/InviteSectionFallback'
+import useMobileScrollOptimizations from '../hooks/useMobileScrollOptimizations'
+import { preloadBelowFoldAssets } from '../utils/performance'
+
+const OurStory = lazy(() => import('../components/OurStory'))
+const WeddingCelebrationsSection = lazy(() => import('../components/WeddingCelebrationsSection'))
+const GroomsFamilySection = lazy(() => import('../components/GroomsFamilySection'))
+const RsvpParallaxSection = lazy(() => import('../components/RsvpParallaxSection'))
+const SeeTheRouteSection = lazy(() => import('../components/SeeTheRouteSection'))
 
 const cinematicEase = [0.22, 1, 0.36, 1]
 
 export default function WeddingInvitePage() {
+  useMobileScrollOptimizations()
+
+  useEffect(() => {
+    return preloadBelowFoldAssets()
+  }, [])
+
   return (
-    <div className="relative min-h-screen overflow-x-clip bg-[#17090d] text-[#FDF6EC]">
+    <div className="invite-page relative min-h-screen overflow-x-clip bg-[#17090d] text-[#FDF6EC]">
       <BackgroundMusic />
       <motion.main
-        className="relative z-20"
+        className="invite-main relative z-20"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 1, ease: cinematicEase }}
+        transition={{ duration: 0.45, ease: cinematicEase }}
       >
         <CinematicCarScrollSection />
-
         <InvitationHeroSection />
-
         <FloatingHeartTransition />
 
-        <OurStory />
+        <Suspense fallback={<InviteSectionFallback />}>
+          <OurStory />
+        </Suspense>
 
-        <WeddingCelebrationsSection />
+        <Suspense fallback={<InviteSectionFallback />}>
+          <WeddingCelebrationsSection />
+        </Suspense>
 
-        <GroomsFamilySection />
+        <Suspense fallback={<InviteSectionFallback />}>
+          <GroomsFamilySection />
+        </Suspense>
 
-        <RsvpParallaxSection />
+        <Suspense fallback={<InviteSectionFallback />}>
+          <RsvpParallaxSection />
+        </Suspense>
 
-        <SeeTheRouteSection />
+        <Suspense fallback={<InviteSectionFallback />}>
+          <SeeTheRouteSection />
+        </Suspense>
       </motion.main>
     </div>
   )

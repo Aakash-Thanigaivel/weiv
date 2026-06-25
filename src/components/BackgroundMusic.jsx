@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { isMobileViewport } from '../utils/performance'
 
-// Replace with your track — drop the file in public/music/
 const MUSIC_SRC = '/music/Wedding_Bells.mp3'
 
 export default function BackgroundMusic() {
@@ -84,7 +84,13 @@ export default function BackgroundMusic() {
 
   return (
     <>
-      <audio ref={audioRef} src={MUSIC_SRC} loop preload="auto" autoPlay />
+      <audio
+        ref={audioRef}
+        src={MUSIC_SRC}
+        loop
+        preload={isMobileViewport() ? 'none' : 'auto'}
+        autoPlay
+      />
 
       <button
         type="button"

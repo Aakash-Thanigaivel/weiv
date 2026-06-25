@@ -39,7 +39,7 @@ export default function RsvpParallaxSection() {
       const txt = textRef.current
       if (!sec || !txt) return
       const rect = sec.getBoundingClientRect()
-      const ih = window.innerHeight
+      const ih = window.visualViewport?.height ?? window.innerHeight
       const range = sec.offsetHeight - ih
       const progress = range > 0 ? Math.max(0, Math.min(1, -rect.top / range)) : 0
       txt.style.transform = `translate3d(0, ${progress * ih * 0.52}px, 0)`
@@ -70,7 +70,7 @@ export default function RsvpParallaxSection() {
   return (
     <section
       ref={sectionRef}
-      className="rsvp-section relative z-20 min-h-[165svh] sm:min-h-[130svh]"
+      className="rsvp-section invite-section-below-fold relative z-20 min-h-[145dvh] sm:min-h-[130svh]"
       aria-label="RSVP section"
     >
       {/* Frame anchored near section bottom so its lower portion still spills into the NEXT section's background */}

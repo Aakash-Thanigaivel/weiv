@@ -64,10 +64,10 @@ export default function CinematicCarScrollSection() {
             scrollTrigger: {
               trigger: sectionRef.current,
               start: 'top top',
-              end: isMobile ? '+=150%' : '+=200%',
+              end: isMobile ? '+=118%' : '+=200%',
               pin: true,
               pinSpacing: true,
-              scrub: isMobile ? 0.7 : isTablet ? 1.2 : 1.8,
+              scrub: isMobile ? 0.42 : isTablet ? 1.2 : 1.8,
               anticipatePin: 1,
               fastScrollEnd: isMobile,
               invalidateOnRefresh: true,

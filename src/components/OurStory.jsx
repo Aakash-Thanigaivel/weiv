@@ -74,7 +74,7 @@ export default function OurStory() {
   return (
     <section
       id="our-story"
-      className="relative min-h-[100svh] overflow-hidden bg-[#140309] bg-cover bg-no-repeat [background-position:50%_42%] sm:[background-position:50%_38%] md:[background-position:50%_34%] lg:bg-center py-24 md:py-28"
+      className="invite-section-below-fold relative -mt-px min-h-[100dvh] overflow-hidden bg-[#140309] bg-cover bg-no-repeat [background-position:50%_42%] sm:[background-position:50%_38%] md:[background-position:50%_34%] lg:bg-center py-16 md:py-28"
       style={{ backgroundImage: "url('/ourstory.png')" }}
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgba(45,10,20,0.18)_0%,rgba(28,7,14,0.32)_44%,rgba(10,2,6,0.56)_100%),linear-gradient(to_bottom,rgba(10,2,6,0.36),rgba(10,2,6,0.46))]" />
@@ -100,12 +100,14 @@ export default function OurStory() {
             {doubledImages.map((imagePath, index) => (
               <div
                 key={`${imagePath}-${index}`}
-                className="group aspect-[4/5] w-[160px] flex-shrink-0 overflow-hidden rounded-xl sm:w-[200px] md:w-[260px] lg:w-[300px]"
+                className="group aspect-[4/5] w-[132px] flex-shrink-0 overflow-hidden rounded-xl sm:w-[200px] md:w-[260px] lg:w-[300px]"
               >
                 <img
                   src={imagePath}
                   alt="Wedding memory"
                   loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
                   className="h-full w-full object-cover transition-transform duration-300 ease-out md:group-hover:scale-105"
                 />
               </div>
@@ -129,7 +131,7 @@ export default function OurStory() {
               }
             }}
             style={{ clipPath: 'url(#our-story-heart-clip)', WebkitClipPath: 'url(#our-story-heart-clip)' }}
-            className={`story-heart-card relative mx-auto overflow-hidden border border-[#C9A84C]/35 bg-[#2a0912]/45 text-center shadow-[0_0_36px_rgba(10,2,5,0.45)] backdrop-blur-sm ${expanded ? 'story-heart-card-expanded' : ''}`}
+            className={`story-heart-card relative mx-auto overflow-hidden border border-[#C9A84C]/35 bg-[#2a0912]/45 text-center shadow-[0_0_36px_rgba(10,2,5,0.45)] md:backdrop-blur-sm ${expanded ? 'story-heart-card-expanded' : ''}`}
             animate={{
               scale: expanded ? 1 : 0.94,
               filter: expanded ? 'blur(0px)' : 'blur(0.2px)',

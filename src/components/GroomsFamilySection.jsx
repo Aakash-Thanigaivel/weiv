@@ -106,11 +106,11 @@ export default function GroomsFamilySection() {
   }, [activeIndex, prefersReducedMotion])
 
   return (
-    <section className="grooms-family-section relative isolate overflow-hidden px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-32">
+    <section className="grooms-family-section invite-section-below-fold relative isolate overflow-hidden px-5 py-16 sm:px-8 sm:py-28 lg:px-10 lg:py-32">
       <div className="grooms-family-bg" aria-hidden="true" />
 
       <motion.div
-        className="grooms-family-shell relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col justify-center"
+        className="grooms-family-shell relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col justify-center"
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.35 }}
