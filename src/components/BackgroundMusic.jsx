@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { isMobileViewport } from '../utils/performance'
 
 const MUSIC_SRC = '/music/Wedding_Bells.mp3'
 
@@ -14,19 +13,27 @@ export default function BackgroundMusic() {
 
     let cancelled = false
 
-    const onCanPlay = () => setIsReady(true)
+    const markReady = () => {
+      if (!cancelled) setIsReady(true)
+    }
+
     const onPlay = () => setIsPlaying(true)
     const onPause = () => setIsPlaying(false)
 
     const removeUnlockListeners = () => {
       document.removeEventListener('pointerdown', unlockPlayback)
       document.removeEventListener('keydown', unlockPlayback)
+      document.removeEventListener('scroll', unlockPlayback, true)
+      document.removeEventListener('touchstart', unlockPlayback)
     }
 
     const attemptPlay = async () => {
       if (cancelled || !audio) return false
 
       try {
+        if (audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+          audio.load()
+        }
         await audio.play()
         removeUnlockListeners()
         return true
@@ -40,18 +47,22 @@ export default function BackgroundMusic() {
     }
 
     const onReady = () => {
-      onCanPlay()
+      markReady()
       void attemptPlay().then((started) => {
         if (!started && !cancelled) {
-          document.addEventListener('pointerdown', unlockPlayback, { once: false })
-          document.addEventListener('keydown', unlockPlayback, { once: false })
+          document.addEventListener('pointerdown', unlockPlayback, { passive: true })
+          document.addEventListener('keydown', unlockPlayback)
+          document.addEventListener('scroll', unlockPlayback, { passive: true, capture: true })
+          document.addEventListener('touchstart', unlockPlayback, { passive: true })
         }
       })
     }
 
+    audio.addEventListener('canplay', markReady)
     audio.addEventListener('canplaythrough', onReady)
     audio.addEventListener('play', onPlay)
     audio.addEventListener('pause', onPause)
+    audio.load()
 
     if (audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
       onReady()
@@ -60,6 +71,7 @@ export default function BackgroundMusic() {
     return () => {
       cancelled = true
       removeUnlockListeners()
+      audio.removeEventListener('canplay', markReady)
       audio.removeEventListener('canplaythrough', onReady)
       audio.removeEventListener('play', onPlay)
       audio.removeEventListener('pause', onPause)
@@ -76,21 +88,18 @@ export default function BackgroundMusic() {
     }
 
     try {
+      if (audio.readyState < HTMLMediaElement.HAVE_FUTURE_DATA) {
+        audio.load()
+      }
       await audio.play()
     } catch {
-      // Ignore if playback is still blocked.
+      // Browser may still require a direct user gesture.
     }
   }
 
   return (
     <>
-      <audio
-        ref={audioRef}
-        src={MUSIC_SRC}
-        loop
-        preload={isMobileViewport() ? 'none' : 'auto'}
-        autoPlay
-      />
+      <audio ref={audioRef} src={MUSIC_SRC} loop preload="auto" />
 
       <button
         type="button"
@@ -98,8 +107,8 @@ export default function BackgroundMusic() {
         onClick={togglePlayback}
         aria-label={isPlaying ? 'Pause background music' : 'Play background music'}
         aria-pressed={isPlaying}
-        disabled={!isReady}
-        title={isReady ? (isPlaying ? 'Pause music' : 'Play music') : 'Loading music…'}
+        aria-busy={!isReady}
+        title={isReady ? (isPlaying ? 'Pause music' : 'Play music') : 'Tap to play music'}
       >
         {isPlaying ? <MusicPauseIcon /> : <MusicPlayIcon />}
       </button>

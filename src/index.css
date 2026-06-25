@@ -75,6 +75,16 @@ html {
   scroll-behavior: smooth;
 }
 
+.invite-preload-cache {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
 @media (max-width: 767px) {
   html {
     scroll-behavior: auto;
@@ -99,16 +109,6 @@ html {
   .invite-section-below-fold {
     content-visibility: auto;
     contain-intrinsic-size: auto 100dvh;
-  }
-
-  .invite-preload-cache {
-    position: absolute;
-    width: 0;
-    height: 0;
-    overflow: hidden;
-    opacity: 0;
-    pointer-events: none;
-    user-select: none;
   }
 
   .story-strip-track {
@@ -868,6 +868,13 @@ body {
     rgba(23, 9, 13, 0.72) 42%,
     #17090d 100%
   );
+}
+
+@media (min-width: 768px) {
+  .cinematic-road-bottom-filler {
+    height: 10dvh;
+    opacity: 0.65;
+  }
 }
 
 .cinematic-road-atmosphere {
