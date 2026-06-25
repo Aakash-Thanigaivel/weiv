@@ -71,7 +71,7 @@ export default function InvitationHeroSection() {
           variants={blurReveal}
           className="cinematic-couple-names mt-4 font-heading text-5xl leading-tight md:text-7xl"
         >
-          Viji &amp; Aakash
+          Aakash &amp; Viji
         </motion.h1>
 
         <motion.p
