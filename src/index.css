@@ -1442,6 +1442,9 @@ body {
 .grooms-family-portrait-motion {
   position: absolute;
   inset: 0;
+  will-change: transform, opacity, filter;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
 .grooms-family-photo-portrait {

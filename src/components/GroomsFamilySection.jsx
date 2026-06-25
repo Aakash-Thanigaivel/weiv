@@ -3,11 +3,36 @@ import { useEffect, useState } from 'react'
 
 const cinematicEase = [0.22, 1, 0.36, 1]
 const SWIPE_INTERVAL_MS = 5600
+const PHOTO_TRANSITION_MS = 1150
 
-const swipeVariants = {
-  enter: (direction) => ({ opacity: 1, x: direction > 0 ? 56 : -56, scale: 1.005 }),
-  center: { opacity: 1, x: 0, scale: 1 },
-  exit: (direction) => ({ opacity: 1, x: direction > 0 ? -56 : 56, scale: 0.995 }),
+const photoVariants = {
+  enter: (direction) => ({
+    opacity: 0,
+    x: direction > 0 ? 22 : -22,
+    scale: 1.04,
+    filter: 'blur(10px)',
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+    filter: 'blur(0px)',
+  },
+  exit: (direction) => ({
+    opacity: 0,
+    x: direction > 0 ? -22 : 22,
+    scale: 0.97,
+    filter: 'blur(10px)',
+  }),
+}
+
+const photoTransition = {
+  duration: PHOTO_TRANSITION_MS / 1000,
+  ease: cinematicEase,
+  opacity: { duration: 0.95, ease: [0.4, 0, 0.2, 1] },
+  filter: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
+  x: { duration: 1.05, ease: cinematicEase },
+  scale: { duration: 1.1, ease: cinematicEase },
 }
 
 const familyFrames = [
@@ -42,6 +67,16 @@ const familyFrames = [
 export default function GroomsFamilySection() {
   const prefersReducedMotion = useReducedMotion()
   const [activeIndex, setActiveIndex] = useState(0)
+  const [isTransitioning, setIsTransitioning] = useState(false)
+
+  useEffect(() => {
+    familyFrames.forEach((frame) => {
+      frame.images.forEach((image) => {
+        const preload = new Image()
+        preload.src = image.src
+      })
+    })
+  }, [])
 
   useEffect(() => {
     if (prefersReducedMotion) {
@@ -56,6 +91,19 @@ export default function GroomsFamilySection() {
       window.clearInterval(intervalId)
     }
   }, [prefersReducedMotion])
+
+  useEffect(() => {
+    if (prefersReducedMotion) return undefined
+
+    setIsTransitioning(true)
+    const timeoutId = window.setTimeout(() => {
+      setIsTransitioning(false)
+    }, PHOTO_TRANSITION_MS)
+
+    return () => {
+      window.clearTimeout(timeoutId)
+    }
+  }, [activeIndex, prefersReducedMotion])
 
   return (
     <section className="grooms-family-section relative isolate overflow-hidden px-5 py-24 sm:px-8 sm:py-28 lg:px-10 lg:py-32">
@@ -96,13 +144,13 @@ export default function GroomsFamilySection() {
                 <motion.div
                   className="grooms-family-portrait-frame grooms-family-portrait-frame-dual"
                   animate={
-                    prefersReducedMotion
-                      ? undefined
+                    prefersReducedMotion || isTransitioning
+                      ? { y: 0 }
                       : { y: frameIndex === 0 ? [-3, 3, -3] : [-4, 2, -4] }
                   }
                   transition={
-                    prefersReducedMotion
-                      ? undefined
+                    prefersReducedMotion || isTransitioning
+                      ? { duration: 0.45, ease: cinematicEase }
                       : { duration: frameIndex === 0 ? 9.5 : 10.2, repeat: Infinity, ease: 'easeInOut' }
                   }
                 >
@@ -112,11 +160,11 @@ export default function GroomsFamilySection() {
                         key={`${item.key}-${activeIndex}`}
                         custom={swipeDirection}
                         className="grooms-family-portrait-motion"
-                        variants={swipeVariants}
+                        variants={photoVariants}
                         initial={prefersReducedMotion ? { opacity: 1 } : 'enter'}
                         animate={prefersReducedMotion ? { opacity: 1 } : 'center'}
                         exit={prefersReducedMotion ? { opacity: 0 } : 'exit'}
-                        transition={{ duration: prefersReducedMotion ? 0.2 : 0.92, ease: cinematicEase }}
+                        transition={prefersReducedMotion ? { duration: 0.2 } : photoTransition}
                       >
                         <img
                           src={activePhoto.src}
