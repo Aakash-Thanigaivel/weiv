@@ -13,7 +13,7 @@ const cinematicEase = [0.22, 1, 0.36, 1]
 
 export default function WeddingInvitePage() {
   return (
-    <div className="relative min-h-screen overflow-x-clip text-[#FDF6EC]">
+    <div className="relative min-h-screen overflow-x-clip bg-[#17090d] text-[#FDF6EC]">
       <BackgroundMusic />
       <motion.main
         className="relative z-20"

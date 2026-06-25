@@ -80,13 +80,14 @@ body {
   min-height: 100vh;
   font-family: var(--font-body);
   color: var(--brand-ivory);
-  background-color: #000;
+  background-color: #17090d;
 }
 
 #root {
   position: relative;
   min-height: 100vh;
   overflow-x: clip;
+  background-color: #17090d;
 }
 
 .font-heading {
@@ -779,7 +780,8 @@ body {
 .cinematic-car-section {
   position: relative;
   width: 100%;
-  min-height: 100svh;
+  height: 100dvh;
+  min-height: 100dvh;
   overflow: hidden;
   isolation: isolate;
   background: #17090d;
@@ -787,13 +789,30 @@ body {
 
 .cinematic-road-layer {
   position: absolute;
-  inset: -6% 0;
+  inset: -14% -2%;
+  background-color: #12080c;
   background-image: url('/roadthree.png');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
-  transform-origin: center center;
+  transform-origin: center 42%;
   will-change: transform;
+}
+
+.cinematic-road-bottom-filler {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  height: 28dvh;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(23, 9, 13, 0) 0%,
+    rgba(23, 9, 13, 0.72) 42%,
+    #17090d 100%
+  );
 }
 
 .cinematic-road-atmosphere {
@@ -1167,8 +1186,14 @@ body {
   }
 
   .cinematic-road-layer {
+    inset: -18% -3%;
     background-size: cover;
-    background-position: center top;
+    background-position: center 38%;
+    transform-origin: center 36%;
+  }
+
+  .cinematic-road-bottom-filler {
+    height: 34dvh;
   }
 
   .cinematic-road-atmosphere {

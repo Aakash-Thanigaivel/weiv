@@ -46,7 +46,7 @@ export default function InvitationHeroSection() {
   }, [])
 
   return (
-    <section id="hero" className="relative min-h-[100svh] w-full overflow-hidden">
+    <section id="hero" className="relative -mt-px min-h-[100dvh] w-full overflow-hidden bg-[#2a0912]">
       <div className="cinematic-hero-bg absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/VYS00213.jpeg)' }} />
       <div className="cinematic-light-glow absolute inset-0" />
       <div className="grain-overlay absolute inset-0" />
@@ -58,7 +58,7 @@ export default function InvitationHeroSection() {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.35 }}
-        className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-6xl flex-col items-center justify-center px-4 py-20 text-center"
+        className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-6xl flex-col items-center justify-center px-4 py-20 text-center"
       >
         <motion.p
           variants={blurReveal}

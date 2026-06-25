@@ -4,6 +4,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const getViewportHeight = () => window.visualViewport?.height ?? window.innerHeight
+
 export default function CinematicCarScrollSection() {
   const sectionRef = useRef(null)
   const roadRef = useRef(null)
@@ -31,11 +33,14 @@ export default function CinematicCarScrollSection() {
           const scrollFactor = isMobile ? -0.48 : isTablet ? -0.54 : -0.60
           const startScale = isMobile ? 0.95 : 0.93
           const endScale = isMobile ? 1.03 : 1.07
+          const roadEndScale = isMobile ? 1.14 : isTablet ? 1.08 : 1.016
+          const roadEndY = isMobile ? -8 : isTablet ? -5 : -2.8
+          const viewportHeight = () => getViewportHeight()
 
           gsap.set(carRef.current, {
             xPercent: -50,
             x: 0,
-            y: () => window.innerHeight * startFactor,
+            y: () => viewportHeight() * startFactor,
             scale: startScale,
             opacity: 0,
             rotate: 0,
@@ -64,6 +69,7 @@ export default function CinematicCarScrollSection() {
               pinSpacing: true,
               scrub: isMobile ? 0.7 : isTablet ? 1.2 : 1.8,
               anticipatePin: 1,
+              fastScrollEnd: isMobile,
               invalidateOnRefresh: true,
             },
           })
@@ -74,8 +80,8 @@ export default function CinematicCarScrollSection() {
             .to(
               roadRef.current,
               {
-                yPercent: -2.8,
-                scale: 1.016,
+                yPercent: roadEndY,
+                scale: roadEndScale,
                 duration: 1,
                 ease: 'sine.inOut',
               },
@@ -84,7 +90,7 @@ export default function CinematicCarScrollSection() {
             .to(
               carRef.current,
               {
-                y: () => window.innerHeight * scrollFactor,
+                y: () => viewportHeight() * scrollFactor,
                 scale: endScale,
                 opacity: 1,
                 duration: 1,
@@ -127,7 +133,7 @@ export default function CinematicCarScrollSection() {
               carRef.current,
               {
                 opacity: 1,
-                y: () => window.innerHeight * restFactor,
+                y: () => viewportHeight() * restFactor,
                 duration: 2.2,
                 ease: 'power3.out',
               },
@@ -167,7 +173,14 @@ export default function CinematicCarScrollSection() {
       }
     }, sectionRef)
 
+    const onViewportChange = () => ScrollTrigger.refresh()
+
+    window.visualViewport?.addEventListener('resize', onViewportChange)
+    window.visualViewport?.addEventListener('scroll', onViewportChange)
+
     return () => {
+      window.visualViewport?.removeEventListener('resize', onViewportChange)
+      window.visualViewport?.removeEventListener('scroll', onViewportChange)
       context.revert()
     }
   }, [])
@@ -175,6 +188,7 @@ export default function CinematicCarScrollSection() {
   return (
     <section ref={sectionRef} className="cinematic-car-section" aria-label="Cinematic wedding car introduction">
       <div ref={roadRef} className="cinematic-road-layer" aria-hidden="true" />
+      <div className="cinematic-road-bottom-filler" aria-hidden="true" />
       <div className="cinematic-road-atmosphere" aria-hidden="true" />
       <div className="cinematic-car-overlay-content" aria-hidden="true">
         <h1 ref={namesRef} className="cinematic-couple-title" aria-label="Aakash and Viji">
