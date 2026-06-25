@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# ML model weights (too large for GitHub; download locally if needed)
+.u2net/
