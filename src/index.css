@@ -858,14 +858,6 @@ body {
   }
 }
 
-.cinematic-pin-stack {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
 .cinematic-scene-layer {
   position: absolute;
   inset: 0;
@@ -933,7 +925,7 @@ body {
 .cinematic-car-overlay-content {
   position: absolute;
   inset: 0;
-  z-index: 2;
+  z-index: 4;
   pointer-events: none;
   display: flex;
   flex-direction: column;

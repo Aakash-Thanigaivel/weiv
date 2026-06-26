@@ -12,7 +12,6 @@ gsap.registerPlugin(ScrollTrigger)
 
 export default function CinematicCarScrollSection() {
   const sectionRef = useRef(null)
-  const pinRef = useRef(null)
   const roadRef = useRef(null)
   const carWrapperRef = useRef(null)
   const namesRef = useRef(null)
@@ -24,13 +23,7 @@ export default function CinematicCarScrollSection() {
   }, [])
 
   useLayoutEffect(() => {
-    if (
-      !sectionRef.current ||
-      !pinRef.current ||
-      !roadRef.current ||
-      !carWrapperRef.current ||
-      !namesRef.current
-    ) {
+    if (!sectionRef.current || !roadRef.current || !carWrapperRef.current || !namesRef.current) {
       return undefined
     }
 
@@ -98,7 +91,7 @@ export default function CinematicCarScrollSection() {
               trigger: sectionRef.current,
               start: 'top top',
               end: isMobile ? '+=118%' : '+=200%',
-              pin: pinRef.current,
+              pin: true,
               pinSpacing: true,
               pinType: 'fixed',
               scrub: true,
@@ -243,27 +236,10 @@ export default function CinematicCarScrollSection() {
 
   return (
     <section ref={sectionRef} className="cinematic-car-section" aria-label="Cinematic wedding car introduction">
-      <div ref={pinRef} className="cinematic-pin-stack">
-        <div className="cinematic-scene-layer" aria-hidden="true">
-          <div ref={roadRef} className="cinematic-road-layer" />
-          <div className="cinematic-road-bottom-filler" />
-          <div className="cinematic-road-atmosphere" />
-        </div>
-        <div className="cinematic-car-overlay-content" aria-hidden="true">
-          <h1 ref={namesRef} className="cinematic-couple-title" aria-label="Aakash loves Viji">
-            <span className="cinematic-couple-name cinematic-intro-line">Aakash</span>
-            <span className="cinematic-couple-heart cinematic-intro-line" aria-hidden="true">
-              ❤
-            </span>
-            <span className="cinematic-couple-name cinematic-intro-line">Viji</span>
-          </h1>
-          <div ref={saveDateGroupRef} className="cinematic-save-date-group">
-            <p className="cinematic-save-date-label">SAVE</p>
-            <p className="cinematic-save-date-label">THE</p>
-            <p className="cinematic-save-date-label">DATE</p>
-            <p className="cinematic-save-date-value">05/07/26</p>
-          </div>
-        </div>
+      <div className="cinematic-scene-layer" aria-hidden="true">
+        <div ref={roadRef} className="cinematic-road-layer" />
+        <div className="cinematic-road-bottom-filler" />
+        <div className="cinematic-road-atmosphere" />
       </div>
       <div className="cinematic-car-clip" aria-hidden="true">
         <div ref={carWrapperRef} className="cinematic-car-wrapper">
@@ -275,6 +251,21 @@ export default function CinematicCarScrollSection() {
             fetchPriority="high"
             decoding="async"
           />
+        </div>
+      </div>
+      <div className="cinematic-car-overlay-content">
+        <h1 ref={namesRef} className="cinematic-couple-title" aria-label="Aakash loves Viji">
+          <span className="cinematic-couple-name cinematic-intro-line">Aakash</span>
+          <span className="cinematic-couple-heart cinematic-intro-line" aria-hidden="true">
+            ❤
+          </span>
+          <span className="cinematic-couple-name cinematic-intro-line">Viji</span>
+        </h1>
+        <div ref={saveDateGroupRef} className="cinematic-save-date-group">
+          <p className="cinematic-save-date-label">SAVE</p>
+          <p className="cinematic-save-date-label">THE</p>
+          <p className="cinematic-save-date-label">DATE</p>
+          <p className="cinematic-save-date-value">05/07/26</p>
         </div>
       </div>
     </section>
