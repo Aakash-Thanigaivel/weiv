@@ -20,7 +20,7 @@ export default function useMobileScrollOptimizations() {
       const atTop =
         window.scrollY <= TOP_SCROLL_TOLERANCE &&
         (window.visualViewport?.offsetTop ?? 0) <= TOP_SCROLL_TOLERANCE
-      const inCarPinSection = window.scrollY < window.innerHeight * 1.2
+      const inCarPinSection = window.scrollY < window.innerHeight * 2.25
 
       if (atTop) {
         document.body.style.overscrollBehaviorY = 'auto'

@@ -1202,6 +1202,87 @@ body {
 
   .story-heart-card {
     min-height: clamp(17.5rem, 66vw, 22rem);
+    transform: scale(0.94);
+    transition:
+      width 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+      min-height 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+      height 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.52s cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 0.36s ease,
+      border-color 0.36s ease;
+    will-change: auto;
+  }
+
+  .story-heart-card-expanded {
+    transform: scale(1);
+  }
+
+  .story-heart-overlay-mobile {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.32s ease;
+  }
+
+  .story-heart-card-expanded .story-heart-overlay-mobile {
+    opacity: 1;
+  }
+
+  .story-heart-overlay-mobile-image {
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    object-position: 50% 68%;
+    opacity: 0.34;
+  }
+
+  .story-heart-ambients-mobile {
+    position: absolute;
+    inset: 0;
+    z-index: 12;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.28s ease 0.1s;
+  }
+
+  .story-heart-card-expanded .story-heart-ambients-mobile {
+    opacity: 1;
+  }
+
+  .story-heart-collapsed-mobile {
+    position: relative;
+    z-index: 20;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.14s ease, visibility 0s linear 0.14s;
+  }
+
+  .story-heart-card-expanded .story-heart-collapsed-mobile {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.12s ease, visibility 0s linear 0.12s;
+  }
+
+  .story-heart-expanded-mobile {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.26s ease 0.08s, visibility 0s linear 0.34s;
+  }
+
+  .story-heart-card-expanded .story-heart-expanded-mobile {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.28s ease 0.06s, visibility 0s linear 0s;
   }
 
   .story-heart-card-expanded {
@@ -1257,6 +1338,177 @@ body {
     background-size: cover;
     background-position: center 38%;
     transform-origin: center 36%;
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+    backface-visibility: hidden;
+  }
+
+  .cinematic-car-wrapper {
+    inset: auto;
+    left: 50%;
+    bottom: -6svh;
+    width: clamp(9.5rem, 50vw, 15.6rem);
+    height: auto;
+    transform: translate3d(-50%, 0, 0);
+    will-change: transform;
+  }
+
+  .cinematic-car-image {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .celebration-scroll-mobile {
+    position: relative;
+    margin-top: -0.15rem;
+    padding: 1.95rem 1.25rem;
+    min-height: 4.9rem;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    background: transparent;
+    overflow: hidden;
+    transition:
+      min-height 0.46s cubic-bezier(0.22, 1, 0.36, 1),
+      padding 0.46s cubic-bezier(0.22, 1, 0.36, 1),
+      border-radius 0.46s cubic-bezier(0.22, 1, 0.36, 1),
+      background 0.22s ease,
+      border-color 0.22s ease,
+      box-shadow 0.28s ease;
+  }
+
+  .celebration-scroll-mobile.is-open {
+    min-height: 26.5rem;
+    padding: 0.95rem 1.25rem;
+    border-color: rgba(177, 130, 69, 0.55);
+    border-radius: 1.1rem 1.1rem 2rem 2rem;
+    background: linear-gradient(
+      165deg,
+      rgba(248, 229, 188, 0.96),
+      rgba(234, 205, 161, 0.96) 40%,
+      rgba(220, 184, 136, 0.94) 100%
+    );
+    box-shadow:
+      0 34px 58px rgba(5, 1, 1, 0.56),
+      0 0 42px rgba(227, 174, 92, 0.26),
+      inset 0 0 0 1px rgba(241, 219, 179, 0.16);
+  }
+
+  .celebration-scroll-mobile-closed {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.14s ease, visibility 0s linear 0.14s;
+    pointer-events: none;
+  }
+
+  .celebration-scroll-mobile.is-open .celebration-scroll-mobile-closed {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.12s ease, visibility 0s linear 0.12s;
+  }
+
+  .celebration-scroll-mobile-pill {
+    display: flex;
+    width: 88%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.28rem;
+    border-radius: 999px;
+    border: 1px solid rgba(154, 105, 54, 0.72);
+    background: linear-gradient(to bottom, #f2dfbe 0%, #e8cc9e 38%, #d8af77 100%);
+    padding: 0.72rem 1rem;
+    box-shadow:
+      inset 0 1px 4px rgba(255, 245, 222, 0.45),
+      inset 0 -2px 5px rgba(92, 56, 24, 0.26),
+      0 8px 14px rgba(8, 2, 3, 0.34);
+  }
+
+  .celebration-scroll-mobile-pill-title {
+    font-size: 0.54rem;
+    letter-spacing: 0.26em;
+    color: #4a2a0c;
+  }
+
+  .celebration-scroll-mobile-pill-hint {
+    font-size: 0.44rem;
+    letter-spacing: 0.18em;
+    color: rgba(106, 67, 24, 0.72);
+  }
+
+  .celebration-scroll-mobile-divider {
+    height: 1px;
+    width: 4.25rem;
+    margin: 0.25rem auto 0;
+    background: linear-gradient(to right, transparent, #9a6b35, transparent);
+    opacity: 0.18;
+    transition: width 0.28s ease, opacity 0.28s ease;
+  }
+
+  .celebration-scroll-mobile.is-open .celebration-scroll-mobile-divider {
+    width: 7.5rem;
+    opacity: 1;
+  }
+
+  .celebration-scroll-mobile-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      grid-template-rows 0.44s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.2s ease;
+  }
+
+  .celebration-scroll-mobile-panel > * {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .celebration-scroll-mobile.is-open .celebration-scroll-mobile-panel {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+
+  .celebration-scroll-mobile-figure {
+    margin: 0 auto 0.875rem;
+    width: 100%;
+    max-width: 13.5rem;
+  }
+
+  .celebration-scroll-mobile-image-wrap {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 0.96rem;
+    background: rgba(200, 160, 111, 0.1);
+  }
+
+  .celebration-scroll-mobile-fringe {
+    position: absolute;
+    left: 9%;
+    right: 9%;
+    bottom: -0.06rem;
+    height: 0.88rem;
+    opacity: 0;
+    background: linear-gradient(to bottom, rgba(228, 194, 146, 0.9), rgba(196, 151, 101, 0.84));
+    clip-path: polygon(
+      0% 22%, 8% 36%, 16% 24%, 24% 38%, 32% 26%, 40% 40%, 50% 28%, 60% 40%, 68% 26%,
+      76% 38%, 84% 24%, 92% 36%, 100% 22%, 100% 100%, 0% 100%
+    );
+    transition: opacity 0.24s ease 0.12s;
+  }
+
+  .celebration-scroll-mobile.is-open .celebration-scroll-mobile-fringe {
+    opacity: 0.95;
   }
 
   .cinematic-road-bottom-filler {
@@ -1265,12 +1517,6 @@ body {
 
   .cinematic-road-atmosphere {
     animation: none;
-  }
-
-  .cinematic-car-image {
-    width: clamp(9.5rem, 50vw, 15.6rem);
-    max-width: 66vw;
-    bottom: -6svh;
   }
 
   .cinematic-couple-title {
@@ -1790,6 +2036,10 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .cinematic-road-layer,
+  .cinematic-car-wrapper {
+    transform: none !important;
+  }
+
   .cinematic-car-image {
     transform: none !important;
   }

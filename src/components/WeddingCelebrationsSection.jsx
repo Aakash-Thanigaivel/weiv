@@ -224,6 +224,21 @@ function ScrollDetails({ details, isOpen, baseDelay = 0.68, isMobile = false }) 
     [details],
   )
 
+  if (isMobile) {
+    return (
+      <div className="space-y-2 text-[#5a3716]">
+        {lines.map((line) => (
+          <div key={line.key} className="flex items-center justify-center gap-2 text-center">
+            <DetailIcon type={line.iconType} />
+            <p className="font-heading text-[0.95rem] leading-relaxed text-[#4d2d12]">
+              {line.value}
+            </p>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-2 text-[#5a3716] md:space-y-2.5">
       {lines.map((line, lineIndex) => (
@@ -248,6 +263,43 @@ function ScrollDetails({ details, isOpen, baseDelay = 0.68, isMobile = false }) 
           </p>
         </motion.div>
       ))}
+    </div>
+  )
+}
+
+function MobileCelebrationScroll({ event, isOpen }) {
+  return (
+    <div className={`celebration-scroll-mobile${isOpen ? ' is-open' : ''}`}>
+      <div className="celebration-scroll-mobile-closed" aria-hidden={isOpen}>
+        <div className="celebration-scroll-mobile-pill">
+          <span className="celebration-scroll-mobile-pill-title font-heading uppercase">{event.title}</span>
+          <span className="celebration-scroll-mobile-pill-hint font-subheading uppercase">tap to open</span>
+        </div>
+      </div>
+
+      <div className="celebration-scroll-mobile-divider" aria-hidden={!isOpen} />
+
+      <div className="celebration-scroll-mobile-panel" aria-hidden={!isOpen}>
+        <div>
+          <figure className="celebration-scroll-mobile-figure">
+            <div className="celebration-scroll-mobile-image-wrap">
+              <InvitePicture
+                name={event.imageName}
+                ext={event.imageExt}
+                alt={event.imageAlt}
+                loading="eager"
+                fetchPriority="high"
+                className={`h-full w-full ${event.imagePosition} object-cover`}
+              />
+            </div>
+          </figure>
+          <div className="mt-2 pb-0.5">
+            <ScrollDetails details={event} isOpen={isOpen} isMobile />
+          </div>
+        </div>
+      </div>
+
+      <div className="celebration-scroll-mobile-fringe" aria-hidden={!isOpen} />
     </div>
   )
 }
@@ -290,7 +342,11 @@ export default function WeddingCelebrationsSection() {
 
     celebrationScrolls.forEach((event) => {
       const preload = new Image()
+      preload.decoding = 'async'
       preload.src = `/mobile/${event.imageName}.webp`
+      if (typeof preload.decode === 'function') {
+        void preload.decode()
+      }
     })
   }, [isNearView, isMobile])
 
@@ -453,38 +509,56 @@ export default function WeddingCelebrationsSection() {
             const shouldDim = activeScroll !== null && !isOpen
             const floatProfile = floatProfiles[index % floatProfiles.length]
 
+            const articleClassName = `relative w-full max-w-[20rem] cursor-pointer outline-none ${
+              index === 1 ? 'md:mt-12 lg:mt-14' : index === 2 ? 'md:-mt-2 lg:mt-4' : 'md:mt-0'
+            }${isMobile ? ` transition-opacity duration-300${shouldDim ? ' opacity-55' : ' opacity-100'}` : ' transition-[filter] duration-500'}`
+
+            const articleProps = {
+              key: event.title,
+              ref: (el) => { articleRefs.current[index] = el },
+              role: 'button',
+              tabIndex: 0,
+              'aria-expanded': isOpen,
+              'aria-label': `${event.title} celebration scroll`,
+              onClick: () => handleManuscriptTap(index),
+              onKeyDown: (eventKey) => {
+                if (eventKey.key === 'Enter' || eventKey.key === ' ') {
+                  eventKey.preventDefault()
+                  handleManuscriptTap(index)
+                }
+              },
+              className: articleClassName,
+            }
+
+            if (isMobile) {
+              return (
+                <motion.article
+                  {...articleProps}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.3 }}
+                  transition={{ duration: 0.55, delay: index * 0.12, ease: cinematicEase }}
+                >
+                  <div className="relative">
+                    <MobileCelebrationScroll event={event} isOpen={isOpen} />
+                  </div>
+                </motion.article>
+              )
+            }
+
             return (
               <motion.article
-                key={event.title}
-                ref={(el) => { articleRefs.current[index] = el }}
-                role="button"
-                tabIndex={0}
-                aria-expanded={isOpen}
-                aria-label={`${event.title} celebration scroll`}
-                onClick={() => handleManuscriptTap(index)}
-                onKeyDown={(eventKey) => {
-                  if (eventKey.key === 'Enter' || eventKey.key === ' ') {
-                    eventKey.preventDefault()
-                    handleManuscriptTap(index)
-                  }
-                }}
-                className={`relative w-full max-w-[20rem] cursor-pointer outline-none transition-[filter] duration-500 ${
-                  index === 1 ? 'md:mt-12 lg:mt-14' : index === 2 ? 'md:-mt-2 lg:mt-4' : 'md:mt-0'
-                }`}
-                initial={isMobile ? { opacity: 0, y: 24 } : { opacity: 0, y: 24, filter: 'blur(8px)' }}
-                whileInView={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
+                {...articleProps}
+                initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
+                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                 viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: isMobile ? 0.55 : 0.75, delay: index * 0.12, ease: cinematicEase }}
-                animate={
-                  isMobile
-                    ? { opacity: shouldDim ? 0.42 : 1, zIndex: isOpen ? 20 : 5 }
-                    : {
-                        scale: isOpen ? 1.045 : 1,
-                        opacity: shouldDim ? 0.42 : 1,
-                        y: isOpen ? -8 : 0,
-                        zIndex: isOpen ? 20 : 5,
-                      }
-                }
+                transition={{ duration: 0.75, delay: index * 0.12, ease: cinematicEase }}
+                animate={{
+                  scale: isOpen ? 1.045 : 1,
+                  opacity: shouldDim ? 0.42 : 1,
+                  y: isOpen ? -8 : 0,
+                  zIndex: isOpen ? 20 : 5,
+                }}
               >
                 <motion.div
                   className="relative"
@@ -508,16 +582,14 @@ export default function WeddingCelebrationsSection() {
                   className="pointer-events-none absolute inset-x-[-8%] -top-[9%] -bottom-[7%] z-0 rounded-[2.4rem] bg-[radial-gradient(circle_at_50%_42%,rgba(238,189,103,0.32)_0%,rgba(192,128,52,0.14)_35%,rgba(35,7,10,0)_72%)] blur-xl"
                   initial={false}
                   animate={
-                    isMobile
-                      ? { opacity: isOpen ? 0.45 : 0, scale: 1 }
-                      : isOpen && glowPulseToken?.startsWith(`${index}-`)
-                        ? {
-                            opacity: [0, 0.96, 0.72],
-                            scale: [0.95, 1.04, 1],
-                          }
-                        : { opacity: isOpen ? 0.72 : 0, scale: isOpen ? 1 : 0.96 }
+                    isOpen && glowPulseToken?.startsWith(`${index}-`)
+                      ? {
+                          opacity: [0, 0.96, 0.72],
+                          scale: [0.95, 1.04, 1],
+                        }
+                      : { opacity: isOpen ? 0.72 : 0, scale: isOpen ? 1 : 0.96 }
                   }
-                  transition={{ duration: isOpen ? (isMobile ? 0.3 : 0.82) : 0.36, delay: isOpen && !isMobile ? 0.28 : 0, ease: cinematicEase }}
+                  transition={{ duration: isOpen ? 0.82 : 0.36, delay: isOpen ? 0.28 : 0, ease: cinematicEase }}
                   aria-hidden="true"
                 />
 
@@ -527,7 +599,7 @@ export default function WeddingCelebrationsSection() {
                   animate={{
                     opacity: isOpen ? 1 : 0,
                     y: isOpen ? 0 : -6,
-                    ...(isMobile ? {} : { filter: isOpen ? 'blur(0px)' : 'blur(4px)' }),
+                    filter: isOpen ? 'blur(0px)' : 'blur(4px)',
                   }}
                   transition={{ duration: 0.42, delay: isOpen ? 0.24 : 0, ease: cinematicEase }}
                   aria-hidden="true"
@@ -544,38 +616,26 @@ export default function WeddingCelebrationsSection() {
                       : 'overflow-visible border border-transparent bg-transparent'
                   }`}
                   initial={false}
-                  animate={
-                    isMobile
-                      ? {
-                          minHeight: isOpen ? '26.5rem' : '4.9rem',
-                          paddingTop: isOpen ? '0.95rem' : '1.95rem',
-                          paddingBottom: isOpen ? '0.95rem' : '1.95rem',
-                          borderRadius: isOpen ? '1.1rem 1.1rem 2rem 2rem' : '999px',
-                          boxShadow: isOpen
-                            ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
-                            : 'none',
-                        }
-                      : {
-                          minHeight: isOpen ? '30.8rem' : '4.9rem',
-                          paddingTop: isOpen ? '0.95rem' : '1.95rem',
-                          paddingBottom: isOpen ? '0.95rem' : '1.95rem',
-                          borderRadius: isOpen
-                            ? '1rem 1rem 38% 38% / 0.95rem 0.95rem 13% 13%'
-                            : '999px',
-                          clipPath: isOpen ? 'inset(0% 0% 0% 0% round 2rem)' : 'none',
-                          scaleX: 1,
-                          boxShadow: isOpen
-                            ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
-                            : 'none',
-                        }
-                  }
-                  transition={{ duration: isMobile ? 0.48 : 0.9, ease: cinematicEase }}
+                  animate={{
+                    minHeight: isOpen ? '30.8rem' : '4.9rem',
+                    paddingTop: isOpen ? '0.95rem' : '1.95rem',
+                    paddingBottom: isOpen ? '0.95rem' : '1.95rem',
+                    borderRadius: isOpen
+                      ? '1rem 1rem 38% 38% / 0.95rem 0.95rem 13% 13%'
+                      : '999px',
+                    clipPath: isOpen ? 'inset(0% 0% 0% 0% round 2rem)' : 'none',
+                    scaleX: 1,
+                    boxShadow: isOpen
+                      ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
+                      : 'none',
+                  }}
+                  transition={{ duration: 0.9, ease: cinematicEase }}
                 >
                   <motion.div
                     className="pointer-events-none absolute inset-x-[6%] top-[30%] z-20 h-[2.35rem] -translate-y-1/2 rounded-full border border-[#9a6936]/72 bg-[linear-gradient(to_bottom,#f2dfbe_0%,#e8cc9e_38%,#d8af77_100%)] shadow-[inset_0_1px_4px_rgba(255,245,222,0.45),inset_0_-2px_5px_rgba(92,56,24,0.26),0_8px_14px_rgba(8,2,3,0.34)]"
                     initial={false}
                     animate={{ opacity: isOpen ? 0 : 1, scaleX: 1 }}
-                    transition={{ duration: isOpen ? (isMobile ? 0.08 : 0.18) : 0.32, ease: cinematicEase }}
+                    transition={{ duration: isOpen ? 0.18 : 0.32, ease: cinematicEase }}
                     style={{ visibility: isOpen ? 'hidden' : 'visible' }}
                     aria-hidden={isOpen}
                   >
@@ -603,8 +663,6 @@ export default function WeddingCelebrationsSection() {
                         </span>
                   </motion.div>
 
-                  {isMobile ? null : (
-                  <>
                   <motion.div
                     className="pointer-events-none absolute inset-x-[16%] top-[0.8rem] h-[0.38rem] rounded-full bg-[linear-gradient(to_bottom,rgba(255,239,204,0.64),rgba(166,117,58,0.08))]"
                     initial={false}
@@ -619,7 +677,7 @@ export default function WeddingCelebrationsSection() {
                     animate={{
                       opacity: isOpen ? 1 : 0,
                       y: isOpen ? 0 : -6,
-                      ...(isMobile ? {} : { filter: isOpen ? 'blur(0px)' : 'blur(4px)' }),
+                      filter: isOpen ? 'blur(0px)' : 'blur(4px)',
                     }}
                     transition={{ duration: 0.46, delay: isOpen ? 0.34 : 0, ease: cinematicEase }}
                     aria-hidden="true"
@@ -672,45 +730,20 @@ export default function WeddingCelebrationsSection() {
                     transition={{ duration: 0.46, delay: isOpen ? 0.6 : 0, ease: cinematicEase }}
                     aria-hidden="true"
                   />
-                  </>
-                  )}
 
                   <motion.div
                     className="relative z-10 mx-auto mt-1 h-px bg-[linear-gradient(to_right,transparent,#9a6b35,transparent)]"
                     initial={false}
                     animate={{ opacity: isOpen ? 1 : 0.18, width: isOpen ? '7.5rem' : '4.25rem' }}
-                    transition={{ duration: isMobile ? 0.28 : 0.45, ease: cinematicEase }}
+                    transition={{ duration: 0.45, ease: cinematicEase }}
                   />
 
                   <motion.div
                     className="relative z-10 mt-2.5 overflow-hidden"
                     initial={false}
-                    animate={
-                      isMobile
-                        ? { maxHeight: isOpen ? '24rem' : '0px', opacity: isOpen ? 1 : 0 }
-                        : { height: isOpen ? '28.4rem' : '0rem', opacity: isOpen ? 1 : 0 }
-                    }
-                    transition={{ duration: isMobile ? 0.38 : 0.76, delay: isOpen ? (isMobile ? 0.16 : 0.46) : 0, ease: cinematicEase }}
+                    animate={{ height: isOpen ? '28.4rem' : '0rem', opacity: isOpen ? 1 : 0 }}
+                    transition={{ duration: 0.76, delay: isOpen ? 0.46 : 0, ease: cinematicEase }}
                   >
-                    {isMobile ? (
-                      <div className={isOpen ? 'block' : 'pointer-events-none invisible'}>
-                        <figure className="relative mx-auto mb-3.5 w-full max-w-[13.5rem] overflow-hidden rounded-[1.02rem]">
-                          <div className="relative aspect-[4/5] overflow-hidden rounded-[0.96rem] bg-[#c8a06f]/10">
-                            <InvitePicture
-                              name={event.imageName}
-                              ext={event.imageExt}
-                              alt={event.imageAlt}
-                              loading="eager"
-                              fetchPriority="high"
-                              className={`h-full w-full ${event.imagePosition} object-cover`}
-                            />
-                          </div>
-                        </figure>
-                        <div className="mt-2 pb-0.5">
-                          <ScrollDetails details={event} isOpen={isOpen} baseDelay={0.22} isMobile={isMobile} />
-                        </div>
-                      </div>
-                    ) : (
                     <AnimatePresence initial={false}>
                       {isOpen ? (
                         <motion.div
@@ -741,12 +774,11 @@ export default function WeddingCelebrationsSection() {
                           </motion.figure>
 
                           <div className="mt-2 pb-0.5">
-                            <ScrollDetails details={event} isOpen={isOpen} baseDelay={1.02} isMobile={isMobile} />
+                            <ScrollDetails details={event} isOpen={isOpen} baseDelay={1.02} isMobile={false} />
                           </div>
                         </motion.div>
                       ) : null}
                     </AnimatePresence>
-                    )}
                   </motion.div>
 
                   <motion.div
@@ -755,44 +787,40 @@ export default function WeddingCelebrationsSection() {
                     initial={false}
                     animate={
                       isOpen
-                        ? isMobile
-                          ? { opacity: 0.95, y: 0, x: 0, scaleY: 1 }
-                          : {
-                              opacity: 0.95,
-                              y: [0, floatProfile.y * 0.2, 0, -floatProfile.y * 0.16, 0],
-                              x: [0, floatProfile.x * 0.24, 0, -floatProfile.x * 0.2, 0],
-                              scaleY: [1, 1.02, 0.995, 1],
-                            }
+                        ? {
+                            opacity: 0.95,
+                            y: [0, floatProfile.y * 0.2, 0, -floatProfile.y * 0.16, 0],
+                            x: [0, floatProfile.x * 0.24, 0, -floatProfile.x * 0.2, 0],
+                            scaleY: [1, 1.02, 0.995, 1],
+                          }
                         : { opacity: 0, y: -3, x: 0, scaleY: 0.9 }
                     }
                     transition={
                       isOpen
-                        ? isMobile
-                          ? { duration: 0.3, ease: cinematicEase }
-                          : {
-                              opacity: { duration: 0.42, delay: 0.48, ease: cinematicEase },
-                              y: {
-                                duration: floatProfile.duration + 0.9,
-                                ease: 'easeInOut',
-                                repeat: Number.POSITIVE_INFINITY,
-                                repeatType: 'mirror',
-                                delay: 1.12 + floatProfile.delay,
-                              },
-                              x: {
-                                duration: floatProfile.duration + 1.2,
-                                ease: 'easeInOut',
-                                repeat: Number.POSITIVE_INFINITY,
-                                repeatType: 'mirror',
-                                delay: 1.12 + floatProfile.delay,
-                              },
-                              scaleY: {
-                                duration: floatProfile.duration + 1,
-                                ease: 'easeInOut',
-                                repeat: Number.POSITIVE_INFINITY,
-                                repeatType: 'mirror',
-                                delay: 1.12 + floatProfile.delay,
-                              },
-                            }
+                        ? {
+                            opacity: { duration: 0.42, delay: 0.48, ease: cinematicEase },
+                            y: {
+                              duration: floatProfile.duration + 0.9,
+                              ease: 'easeInOut',
+                              repeat: Number.POSITIVE_INFINITY,
+                              repeatType: 'mirror',
+                              delay: 1.12 + floatProfile.delay,
+                            },
+                            x: {
+                              duration: floatProfile.duration + 1.2,
+                              ease: 'easeInOut',
+                              repeat: Number.POSITIVE_INFINITY,
+                              repeatType: 'mirror',
+                              delay: 1.12 + floatProfile.delay,
+                            },
+                            scaleY: {
+                              duration: floatProfile.duration + 1,
+                              ease: 'easeInOut',
+                              repeat: Number.POSITIVE_INFINITY,
+                              repeatType: 'mirror',
+                              delay: 1.12 + floatProfile.delay,
+                            },
+                          }
                         : { duration: 0.3, ease: cinematicEase }
                     }
                     aria-hidden="true"

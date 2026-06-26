@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { isMobileViewport } from '../utils/performance'
 
 const storyImages = [
   '/IMG_1.jpeg',
@@ -43,7 +44,78 @@ const fullStory = [
   'Some stories are arranged by families, but the most beautiful part is when they are completed by love. ❤️',
 ]
 
+function MobileStoryHeartCard({ expanded, onToggle, cardRef }) {
+  return (
+    <div
+      ref={cardRef}
+      role="button"
+      tabIndex={0}
+      aria-expanded={expanded}
+      aria-label={expanded ? 'Collapse story heart' : 'Expand story heart'}
+      onClick={onToggle}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          onToggle()
+        }
+      }}
+      style={{ clipPath: 'url(#our-story-heart-clip)', WebkitClipPath: 'url(#our-story-heart-clip)' }}
+      className={`story-heart-card relative mx-auto overflow-hidden border border-[#C9A84C]/35 bg-[#2a0912]/45 text-center shadow-[0_0_36px_rgba(10,2,5,0.45)]${expanded ? ' story-heart-card-expanded' : ''}`}
+    >
+      <div className="story-heart-overlay-mobile" aria-hidden={!expanded}>
+        <img
+          src={overlayImage}
+          alt=""
+          loading="lazy"
+          decoding="async"
+          className="story-heart-overlay-mobile-image"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#12040a]/58 via-[#15060c]/68 to-[#0e0307]/84" />
+      </div>
+
+      <div className="story-heart-ambients-mobile" aria-hidden={!expanded}>
+        <div className="story-heart-ambient story-heart-ambient-left" />
+        <div className="story-heart-ambient story-heart-ambient-right" />
+        <div className="story-heart-ambient story-heart-ambient-top" />
+      </div>
+
+      <div className="story-heart-collapsed-mobile" aria-hidden={expanded}>
+        <div className="relative z-20 mx-auto flex h-full w-full flex-col items-center justify-center px-6 pt-[28%] pb-[18%] text-center">
+          <div className="mx-auto max-w-[22rem] text-balance text-lg leading-relaxed text-white/75">
+            <p>
+              <span className="block">40 Minutes to Know,</span>
+              <span className="block">A Lifetime to Love</span>
+            </p>
+            {storyPreviewLines.map((line) => (
+              <p key={line}>{line}</p>
+            ))}
+          </div>
+
+          <span className="story-heart-read-more mt-8 inline-flex items-center justify-center rounded-full border border-[#F4DA9C]/70 bg-[#C9A84C]/15 px-7 py-3 font-subheading text-sm uppercase tracking-[0.2em] text-[#FDF6EC] shadow-[0_0_18px_rgba(201,168,76,0.45)]">
+            Read More
+          </span>
+        </div>
+      </div>
+
+      <div
+        id="our-story-full-text"
+        className="story-heart-expanded-content story-heart-expanded-mobile"
+        aria-hidden={!expanded}
+      >
+        <div className="story-heart-full-text">
+          {fullStory.map((paragraph, index) => (
+            <p key={`story-paragraph-${index}`} className={`story-heart-tier story-heart-tier-${index}`}>
+              {paragraph}
+            </p>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function OurStory() {
+  const isMobile = useMemo(() => isMobileViewport(), [])
   const [expanded, setExpanded] = useState(false)
   const cardRef = useRef(null)
 
@@ -116,6 +188,13 @@ export default function OurStory() {
         </div>
 
         <div className="relative mx-auto mt-16 w-full">
+          {isMobile ? (
+            <MobileStoryHeartCard
+              expanded={expanded}
+              onToggle={() => setExpanded((prev) => !prev)}
+              cardRef={cardRef}
+            />
+          ) : (
           <motion.div
             ref={cardRef}
             layout
@@ -258,6 +337,7 @@ export default function OurStory() {
               ) : null}
             </AnimatePresence>
           </motion.div>
+          )}
         </div>
       </div>
     </section>

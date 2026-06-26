@@ -13,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger)
 export default function CinematicCarScrollSection() {
   const sectionRef = useRef(null)
   const roadRef = useRef(null)
-  const carRef = useRef(null)
+  const carWrapperRef = useRef(null)
   const namesRef = useRef(null)
   const saveDateGroupRef = useRef(null)
 
@@ -23,7 +23,7 @@ export default function CinematicCarScrollSection() {
   }, [])
 
   useLayoutEffect(() => {
-    if (!sectionRef.current || !roadRef.current || !carRef.current || !namesRef.current) {
+    if (!sectionRef.current || !roadRef.current || !carWrapperRef.current || !namesRef.current) {
       return undefined
     }
 
@@ -60,14 +60,15 @@ export default function CinematicCarScrollSection() {
             transformOrigin: 'center 36%',
           })
 
-          gsap.set(carRef.current, {
+          gsap.set(carWrapperRef.current, {
             xPercent: -50,
+            left: '50%',
             x: 0,
             y: () => viewportHeight() * startFactor,
             scale: startScale,
             opacity: 0,
             rotate: 0,
-            transformOrigin: '50% 65%',
+            transformOrigin: '50% 80%',
             force3D: true,
           })
 
@@ -82,6 +83,11 @@ export default function CinematicCarScrollSection() {
             clipPath: 'inset(100% 0% 0% 0%)',
           })
 
+          const introY = () => viewportHeight() * restFactor
+          const introScale = startScale + 0.04
+          const scrollY = () => viewportHeight() * scrollFactor
+          let introComplete = false
+
           const scrollTimeline = gsap.timeline({
             paused: true,
             defaults: { ease: 'none' },
@@ -92,14 +98,21 @@ export default function CinematicCarScrollSection() {
               pin: true,
               pinSpacing: true,
               pinType: isMobile ? 'fixed' : 'transform',
-              scrub: isMobile ? 0.85 : isTablet ? 1.2 : 1.8,
+              scrub: isMobile ? true : isTablet ? 1.2 : 1.8,
               anticipatePin: 0,
               fastScrollEnd: false,
-              invalidateOnRefresh: true,
+              invalidateOnRefresh: !isMobile,
+              onUpdate: (self) => {
+                if (isMobile && !introComplete) {
+                  self.scroll(self.start)
+                }
+              },
             },
           })
 
-          scrollTimeline.scrollTrigger.disable()
+          if (!isMobile) {
+            scrollTimeline.scrollTrigger.disable()
+          }
 
           if (!isMobile) {
             scrollTimeline.to(
@@ -114,18 +127,23 @@ export default function CinematicCarScrollSection() {
             )
           }
 
-          scrollTimeline
-            .to(
-              carRef.current,
-              {
-                y: () => viewportHeight() * scrollFactor,
-                scale: endScale,
-                opacity: 1,
-                duration: 1,
-                ease: 'sine.inOut',
-              },
-              0,
-            )
+          scrollTimeline.fromTo(
+            carWrapperRef.current,
+            {
+              y: introY,
+              scale: introScale,
+              opacity: 1,
+            },
+            {
+              y: scrollY,
+              scale: endScale,
+              opacity: 1,
+              duration: 1,
+              ease: 'sine.inOut',
+              immediateRender: false,
+            },
+            0,
+          )
             .to(
               saveDateGroupRef.current,
               {
@@ -152,12 +170,27 @@ export default function CinematicCarScrollSection() {
           const enableScroll = () => {
             if (cancelled || scrollReady) return
             scrollReady = true
+            introComplete = true
 
-            scrollTimeline.invalidate()
-            scrollTimeline.progress(0, true)
-            scrollTimeline.scrollTrigger.enable()
+            gsap.set(carWrapperRef.current, {
+              xPercent: -50,
+              left: '50%',
+              x: 0,
+              y: introY(),
+              scale: introScale,
+              opacity: 1,
+              force3D: true,
+            })
 
-            ScrollTrigger.refresh(true)
+            if (isMobile) {
+              scrollTimeline.progress(0)
+              return
+            }
+
+            scrollTimeline.scrollTrigger.enable(false)
+            requestAnimationFrame(() => {
+              ScrollTrigger.refresh()
+            })
           }
 
           const playIntro = () => {
@@ -171,19 +204,19 @@ export default function CinematicCarScrollSection() {
 
             introTimeline
               .to(
-                carRef.current,
+                carWrapperRef.current,
                 {
                   opacity: 1,
-                  y: () => viewportHeight() * restFactor,
+                  y: introY,
                   duration: 1.15,
                   ease: 'power3.out',
                 },
                 0,
               )
               .to(
-                carRef.current,
+                carWrapperRef.current,
                 {
-                  scale: startScale + 0.04,
+                  scale: introScale,
                   duration: 0.9,
                   ease: 'sine.out',
                   onComplete: enableScroll,
@@ -250,9 +283,8 @@ export default function CinematicCarScrollSection() {
           <p className="cinematic-save-date-value">05/07/26</p>
         </div>
       </div>
-      <div className="cinematic-car-wrapper" aria-hidden="true">
+      <div ref={carWrapperRef} className="cinematic-car-wrapper" aria-hidden="true">
         <img
-          ref={carRef}
           src="/flocar.png"
           alt="Wedding car"
           className="cinematic-car-image"
