@@ -841,7 +841,21 @@ body {
   overflow: hidden;
   isolation: isolate;
   background: #17090d;
-  contain: paint;
+}
+
+@media (min-width: 768px) {
+  .cinematic-scene-layer {
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+
+  .cinematic-road-atmosphere {
+    animation: none;
+  }
+
+  .cinematic-car-overlay-content {
+    will-change: auto;
+  }
 }
 
 .cinematic-scene-layer {

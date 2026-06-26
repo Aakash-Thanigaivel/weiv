@@ -94,11 +94,11 @@ export default function CinematicCarScrollSection() {
               end: isMobile ? '+=118%' : '+=200%',
               pin: true,
               pinSpacing: true,
-              pinType: isMobile ? 'fixed' : 'transform',
-              scrub: isMobile ? true : isTablet ? 1.2 : 1.8,
+              pinType: 'fixed',
+              scrub: true,
               anticipatePin: 0,
               fastScrollEnd: false,
-              invalidateOnRefresh: !isMobile,
+              invalidateOnRefresh: false,
               onUpdate: (self) => {
                 if (isMobile && !introComplete) {
                   self.scroll(self.start)
@@ -133,7 +133,7 @@ export default function CinematicCarScrollSection() {
               scale: endScale,
               opacity: 1,
               duration: 1,
-              ease: 'sine.inOut',
+              ease: 'none',
               immediateRender: false,
             },
             0,
@@ -151,10 +151,8 @@ export default function CinematicCarScrollSection() {
               namesRef.current,
               {
                 opacity: 0,
-                yPercent: -18,
-                filter: 'blur(12px)',
                 duration: 0.34,
-                ease: 'sine.inOut',
+                ease: 'none',
               },
               0.16,
             )
@@ -182,9 +180,6 @@ export default function CinematicCarScrollSection() {
             }
 
             scrollTimeline.scrollTrigger.enable(false)
-            requestAnimationFrame(() => {
-              ScrollTrigger.refresh()
-            })
           }
 
           const playIntro = () => {
@@ -245,7 +240,11 @@ export default function CinematicCarScrollSection() {
       }
     }, sectionRef)
 
-    const onViewportResize = () => ScrollTrigger.refresh()
+    const onViewportResize = () => {
+      if (window.matchMedia('(max-width: 767px)').matches) {
+        ScrollTrigger.refresh()
+      }
+    }
 
     window.visualViewport?.addEventListener('resize', onViewportResize)
 
