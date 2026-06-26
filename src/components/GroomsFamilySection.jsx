@@ -1,11 +1,14 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import InvitePicture from './InvitePicture'
+import useSectionNearView from '../hooks/useSectionNearView'
+import { isMobileViewport, preloadFamilySlide } from '../utils/performance'
 
 const cinematicEase = [0.22, 1, 0.36, 1]
 const SWIPE_INTERVAL_MS = 5600
 const PHOTO_TRANSITION_MS = 1150
 
-const photoVariants = {
+const photoVariantsDesktop = {
   enter: (direction) => ({
     opacity: 0,
     x: direction > 0 ? 22 : -22,
@@ -26,13 +29,36 @@ const photoVariants = {
   }),
 }
 
-const photoTransition = {
+const photoVariantsMobile = {
+  enter: (direction) => ({
+    opacity: 0,
+    x: direction > 0 ? 12 : -12,
+    scale: 1.02,
+  }),
+  center: {
+    opacity: 1,
+    x: 0,
+    scale: 1,
+  },
+  exit: (direction) => ({
+    opacity: 0,
+    x: direction > 0 ? -12 : 12,
+    scale: 0.98,
+  }),
+}
+
+const photoTransitionDesktop = {
   duration: PHOTO_TRANSITION_MS / 1000,
   ease: cinematicEase,
   opacity: { duration: 0.95, ease: [0.4, 0, 0.2, 1] },
   filter: { duration: 0.8, ease: [0.4, 0, 0.2, 1] },
   x: { duration: 1.05, ease: cinematicEase },
   scale: { duration: 1.1, ease: cinematicEase },
+}
+
+const photoTransitionMobile = {
+  duration: 0.55,
+  ease: cinematicEase,
 }
 
 const familyFrames = [
@@ -66,20 +92,21 @@ const familyFrames = [
 
 export default function GroomsFamilySection() {
   const prefersReducedMotion = useReducedMotion()
+  const isMobile = useMemo(() => isMobileViewport(), [])
+  const [sectionRef, isNearView] = useSectionNearView('420px 0px')
   const [activeIndex, setActiveIndex] = useState(0)
   const [isTransitioning, setIsTransitioning] = useState(false)
 
-  useEffect(() => {
-    familyFrames.forEach((frame) => {
-      frame.images.forEach((image) => {
-        const preload = new Image()
-        preload.src = image.src
-      })
-    })
-  }, [])
+  const photoVariants = isMobile ? photoVariantsMobile : photoVariantsDesktop
+  const photoTransition = isMobile ? photoTransitionMobile : photoTransitionDesktop
 
   useEffect(() => {
-    if (prefersReducedMotion) {
+    if (!isNearView) return undefined
+    preloadFamilySlide(activeIndex)
+  }, [isNearView, activeIndex])
+
+  useEffect(() => {
+    if (!isNearView || prefersReducedMotion) {
       return undefined
     }
 
@@ -90,7 +117,7 @@ export default function GroomsFamilySection() {
     return () => {
       window.clearInterval(intervalId)
     }
-  }, [prefersReducedMotion])
+  }, [isNearView, prefersReducedMotion])
 
   useEffect(() => {
     if (prefersReducedMotion) return undefined
@@ -98,15 +125,18 @@ export default function GroomsFamilySection() {
     setIsTransitioning(true)
     const timeoutId = window.setTimeout(() => {
       setIsTransitioning(false)
-    }, PHOTO_TRANSITION_MS)
+    }, isMobile ? 550 : PHOTO_TRANSITION_MS)
 
     return () => {
       window.clearTimeout(timeoutId)
     }
-  }, [activeIndex, prefersReducedMotion])
+  }, [activeIndex, prefersReducedMotion, isMobile])
 
   return (
-    <section className="grooms-family-section invite-section-below-fold relative isolate overflow-hidden px-5 py-16 sm:px-8 sm:py-28 lg:px-10 lg:py-32">
+    <section
+      ref={sectionRef}
+      className={`grooms-family-section invite-section-below-fold relative isolate overflow-hidden px-5 py-16 sm:px-8 sm:py-28 lg:px-10 lg:py-32${isNearView ? ' grooms-family-section--ready' : ''}`}
+    >
       <div className="grooms-family-bg" aria-hidden="true" />
 
       <motion.div
@@ -114,7 +144,7 @@ export default function GroomsFamilySection() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.35 }}
-        transition={{ duration: 1.1, ease: cinematicEase }}
+        transition={{ duration: isMobile ? 0.7 : 1.1, ease: cinematicEase }}
       >
         <div className="grooms-family-intro mx-auto text-center">
           <p className="grooms-family-kicker font-subheading uppercase">The Pair's</p>
@@ -130,6 +160,7 @@ export default function GroomsFamilySection() {
           {familyFrames.map((item, frameIndex) => {
             const activePhoto = item.images[activeIndex]
             const swipeDirection = frameIndex === 0 ? 1 : -1
+            const shouldFloat = isNearView && !prefersReducedMotion && !isTransitioning && !isMobile
 
             return (
               <motion.article
@@ -144,14 +175,14 @@ export default function GroomsFamilySection() {
                 <motion.div
                   className="grooms-family-portrait-frame grooms-family-portrait-frame-dual"
                   animate={
-                    prefersReducedMotion || isTransitioning
-                      ? { y: 0 }
-                      : { y: frameIndex === 0 ? [-3, 3, -3] : [-4, 2, -4] }
+                    shouldFloat
+                      ? { y: frameIndex === 0 ? [-3, 3, -3] : [-4, 2, -4] }
+                      : { y: 0 }
                   }
                   transition={
-                    prefersReducedMotion || isTransitioning
-                      ? { duration: 0.45, ease: cinematicEase }
-                      : { duration: frameIndex === 0 ? 9.5 : 10.2, repeat: Infinity, ease: 'easeInOut' }
+                    shouldFloat
+                      ? { duration: frameIndex === 0 ? 9.5 : 10.2, repeat: Infinity, ease: 'easeInOut' }
+                      : { duration: 0.45, ease: cinematicEase }
                   }
                 >
                   <div className="grooms-family-portrait-slot">
@@ -170,30 +201,32 @@ export default function GroomsFamilySection() {
                           src={activePhoto.src}
                           alt={activePhoto.alt}
                           className={`grooms-family-portrait-photo ${activePhoto.className}`}
-                          loading="lazy"
+                          loading={isNearView ? 'eager' : 'lazy'}
                           decoding="async"
+                          fetchPriority={isNearView && activeIndex === 0 ? 'high' : 'low'}
                         />
                       </motion.div>
                     </AnimatePresence>
                   </div>
-                  <img
-                    src="/newarch.png"
+                  <InvitePicture
+                    name="newarch"
+                    ext="png"
                     alt="Royal portrait frame"
                     className="grooms-family-portrait-image"
-                    loading="lazy"
-                    decoding="async"
+                    loading={isNearView ? 'eager' : 'lazy'}
+                    fetchPriority={isNearView ? 'high' : 'low'}
                   />
                 </motion.div>
-                  <div className="grooms-family-parents" aria-label={`${item.label} parent names`}>
-                    <p className="grooms-family-parent-name">{item.parents[0]}</p>
-                    <p className="grooms-family-parent-name">{item.parents[1]}</p>
-                  </div>
+                <div className="grooms-family-parents" aria-label={`${item.label} parent names`}>
+                  <p className="grooms-family-parent-name">{item.parents[0]}</p>
+                  <p className="grooms-family-parent-name">{item.parents[1]}</p>
+                </div>
               </motion.article>
             )
           })}
         </div>
 
-          <p className="grooms-family-subtitle mt-2 text-center font-subheading uppercase sm:mt-3">
+        <p className="grooms-family-subtitle mt-2 text-center font-subheading uppercase sm:mt-3">
           With Love &amp; Blessings
         </p>
       </motion.div>

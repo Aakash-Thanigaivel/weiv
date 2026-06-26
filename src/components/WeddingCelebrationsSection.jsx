@@ -1,5 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import InvitePicture from './InvitePicture'
+import useSectionNearView from '../hooks/useSectionNearView'
 import { isMobileViewport } from '../utils/performance'
 
 const cinematicEase = [0.22, 1, 0.36, 1]
@@ -7,7 +9,8 @@ const cinematicEase = [0.22, 1, 0.36, 1]
 const celebrationScrolls = [
   {
     title: 'Engagement',
-    imageSrc: '/engagement.png',
+    imageName: 'engagement',
+    imageExt: 'png',
     imageAlt: 'Engagement ceremony illustration',
     imagePosition: 'object-[center_42%]',
     frameTone: 'from-[#f4d793]/70 via-[#f0c36c]/18 to-[#6f4517]/22',
@@ -18,7 +21,8 @@ const celebrationScrolls = [
   },
   {
     title: 'Reception',
-    imageSrc: '/reception.png',
+    imageName: 'reception',
+    imageExt: 'png',
     imageAlt: 'Reception celebration illustration',
     imagePosition: 'object-[center_20%]',
     frameTone: 'from-[#d1b0c6]/34 via-[#6b3158]/18 to-[#2b1225]/34',
@@ -29,7 +33,8 @@ const celebrationScrolls = [
   },
   {
     title: 'Wedding',
-    imageSrc: '/muhurutham.png',
+    imageName: 'muhurutham',
+    imageExt: 'png',
     imageAlt: 'Muhurtham wedding illustration',
     imagePosition: 'object-[center_26%]',
     frameTone: 'from-[#efd2a1]/68 via-[#c99445]/16 to-[#5f2f12]/24',
@@ -209,7 +214,7 @@ function DetailIcon({ type }) {
   )
 }
 
-function ScrollDetails({ details, isOpen, baseDelay = 0.68 }) {
+function ScrollDetails({ details, isOpen, baseDelay = 0.68, isMobile = false }) {
   const lines = useMemo(
     () => [
       { key: 'date', iconType: 'date', value: details.date },
@@ -227,8 +232,8 @@ function ScrollDetails({ details, isOpen, baseDelay = 0.68 }) {
           initial={false}
           animate={
             isOpen
-              ? { opacity: 1, y: 0, filter: 'blur(0px)' }
-              : { opacity: 0, y: 10, filter: 'blur(4px)' }
+              ? { opacity: 1, y: 0, ...(isMobile ? {} : { filter: 'blur(0px)' }) }
+              : { opacity: 0, y: 10, ...(isMobile ? {} : { filter: 'blur(4px)' }) }
           }
           transition={{
             duration: 0.4,
@@ -248,32 +253,34 @@ function ScrollDetails({ details, isOpen, baseDelay = 0.68 }) {
 }
 
 export default function WeddingCelebrationsSection() {
+  const isMobile = useMemo(() => isMobileViewport(), [])
+  const [sectionRef, isNearView] = useSectionNearView('480px 0px')
   const [activeScroll, setActiveScroll] = useState(null)
   const [bouncingScroll, setBouncingScroll] = useState(null)
   const [glowPulseToken, setGlowPulseToken] = useState(null)
   const [particleBurst, setParticleBurst] = useState(null)
   const [sectionHeight, setSectionHeight] = useState(760)
 
-  const sectionRef = useRef(null)
+  const innerSectionRef = useRef(null)
   const openTimeoutRef = useRef(null)
   const burstTimeoutRef = useRef(null)
   const articleRefs = useRef([])
 
   useEffect(() => {
-    if (!sectionRef.current || typeof ResizeObserver === 'undefined') {
+    if (!innerSectionRef.current || typeof ResizeObserver === 'undefined') {
       return undefined
     }
 
     const updateSectionHeight = () => {
-      if (sectionRef.current) {
-        setSectionHeight(sectionRef.current.clientHeight)
+      if (innerSectionRef.current) {
+        setSectionHeight(innerSectionRef.current.clientHeight)
       }
     }
 
     updateSectionHeight()
 
     const observer = new ResizeObserver(updateSectionHeight)
-    observer.observe(sectionRef.current)
+    observer.observe(innerSectionRef.current)
 
     return () => observer.disconnect()
   }, [])
@@ -342,10 +349,10 @@ export default function WeddingCelebrationsSection() {
     <section
       ref={sectionRef}
       id="wedding-celebrations"
-      className="invite-section-below-fold relative min-h-[100dvh] overflow-hidden bg-cover bg-center bg-no-repeat py-16 md:py-28"
-      style={{ backgroundImage: "url('/4thsectionbg.jpeg')" }}
+      className={`wedding-celebrations-section invite-section-below-fold relative min-h-[100dvh] overflow-hidden py-16 md:py-28${isNearView ? ' wedding-celebrations-section--ready' : ''}`}
       aria-label="Wedding Celebrations"
     >
+      <div ref={innerSectionRef} className="pointer-events-none absolute inset-0" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_bottom,rgba(24,5,7,0.62),rgba(22,4,6,0.7),rgba(12,2,4,0.8))]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(222,166,84,0.13)_0%,rgba(72,16,18,0.06)_48%,rgba(8,1,2,0.4)_100%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,transparent_48%,rgba(8,1,2,0.34)_100%)]" />
@@ -412,10 +419,10 @@ export default function WeddingCelebrationsSection() {
 
       <div className="relative mx-auto w-full max-w-6xl px-4">
         <motion.div
-          initial={{ opacity: 0, y: 18, filter: 'blur(8px)' }}
-          whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+          initial={isMobile ? { opacity: 0, y: 18 } : { opacity: 0, y: 18, filter: 'blur(8px)' }}
+          whileInView={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
           viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.8, ease: cinematicEase }}
+          transition={{ duration: isMobile ? 0.55 : 0.8, ease: cinematicEase }}
           className="text-center"
         >
           <h2 className="font-heading text-4xl text-[#f7e8d2] drop-shadow-[0_2px_10px_rgba(0,0,0,0.55)] md:text-5xl">
@@ -426,7 +433,7 @@ export default function WeddingCelebrationsSection() {
           </p>
         </motion.div>
 
-        <div className="mt-14 flex flex-col items-center gap-8 md:mt-16 md:grid md:grid-cols-3 md:items-start md:justify-items-center md:gap-6 lg:gap-10">
+        <div className="mt-10 flex flex-col items-center gap-6 md:mt-16 md:grid md:grid-cols-3 md:items-start md:justify-items-center md:gap-6 lg:gap-10">
           {celebrationScrolls.map((event, index) => {
             const isOpen = activeScroll === index
             const shouldDim = activeScroll !== null && !isOpen
@@ -450,10 +457,10 @@ export default function WeddingCelebrationsSection() {
                 className={`relative w-full max-w-[20rem] cursor-pointer outline-none transition-[filter] duration-500 ${
                   index === 1 ? 'md:mt-12 lg:mt-14' : index === 2 ? 'md:-mt-2 lg:mt-4' : 'md:mt-0'
                 }`}
-                initial={{ opacity: 0, y: 24, filter: 'blur(8px)' }}
-                whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                initial={isMobile ? { opacity: 0, y: 24 } : { opacity: 0, y: 24, filter: 'blur(8px)' }}
+                whileInView={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
                 viewport={{ once: true, amount: 0.3 }}
-                transition={{ duration: 0.75, delay: index * 0.12, ease: cinematicEase }}
+                transition={{ duration: isMobile ? 0.55 : 0.75, delay: index * 0.12, ease: cinematicEase }}
                 animate={{
                   scale: isOpen ? 1.045 : 1,
                   opacity: shouldDim ? 0.42 : 1,
@@ -514,7 +521,7 @@ export default function WeddingCelebrationsSection() {
                   }`}
                   initial={false}
                   animate={{
-                    minHeight: isOpen ? '30.8rem' : '4.9rem',
+                    minHeight: isOpen ? (isMobile ? '26.5rem' : '30.8rem') : '4.9rem',
                     paddingTop: isOpen ? '0.95rem' : '1.95rem',
                     paddingBottom: isOpen ? '0.95rem' : '1.95rem',
                     borderRadius: isOpen
@@ -638,8 +645,11 @@ export default function WeddingCelebrationsSection() {
                   <motion.div
                     className="relative z-10 mt-2.5 overflow-hidden"
                     initial={false}
-                    animate={{ height: isOpen ? '28.4rem' : '0rem', opacity: isOpen ? 1 : 0 }}
-                    transition={{ duration: 0.76, delay: isOpen ? 0.46 : 0, ease: cinematicEase }}
+                    animate={{
+                      height: isOpen ? (isMobile ? '24.2rem' : '28.4rem') : '0rem',
+                      opacity: isOpen ? 1 : 0,
+                    }}
+                    transition={{ duration: isMobile ? 0.58 : 0.76, delay: isOpen ? 0.46 : 0, ease: cinematicEase }}
                   >
                     <AnimatePresence initial={false}>
                       {isOpen ? (
@@ -651,26 +661,27 @@ export default function WeddingCelebrationsSection() {
                           transition={{ duration: 0.3, ease: cinematicEase }}
                         >
                           <motion.figure
-                            className="relative mx-auto mb-3.5 w-full max-w-[15.2rem] overflow-hidden rounded-[1.02rem]"
-                            initial={{ opacity: 0, y: 12, scale: 0.965, filter: 'blur(7px)' }}
-                            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                            exit={{ opacity: 0, y: 8, scale: 0.98, filter: 'blur(5px)' }}
-                            transition={{ duration: 0.74, delay: 0.72, ease: cinematicEase }}
+                            className="relative mx-auto mb-3.5 w-full max-w-[13.5rem] overflow-hidden rounded-[1.02rem] md:max-w-[15.2rem]"
+                            initial={isMobile ? { opacity: 0, y: 12, scale: 0.98 } : { opacity: 0, y: 12, scale: 0.965, filter: 'blur(7px)' }}
+                            animate={isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                            exit={isMobile ? { opacity: 0, y: 8, scale: 0.99 } : { opacity: 0, y: 8, scale: 0.98, filter: 'blur(5px)' }}
+                            transition={{ duration: isMobile ? 0.45 : 0.74, delay: isMobile ? 0.35 : 0.72, ease: cinematicEase }}
                             style={{ boxShadow: '0 8px 18px rgba(69, 38, 16, 0.14)' }}
                           >
                             <div className="relative aspect-[4/5] overflow-hidden rounded-[0.96rem] bg-[#c8a06f]/10">
-                              <img
-                                src={event.imageSrc}
+                              <InvitePicture
+                                name={event.imageName}
+                                ext={event.imageExt}
                                 alt={event.imageAlt}
                                 loading="eager"
-                                decoding="async"
+                                fetchPriority="high"
                                 className={`h-full w-full ${event.imagePosition} object-cover`}
                               />
                             </div>
                           </motion.figure>
 
                           <div className="mt-2 pb-0.5">
-                            <ScrollDetails details={event} isOpen={isOpen} baseDelay={1.02} />
+                            <ScrollDetails details={event} isOpen={isOpen} baseDelay={isMobile ? 0.55 : 1.02} isMobile={isMobile} />
                           </div>
                         </motion.div>
                       ) : null}

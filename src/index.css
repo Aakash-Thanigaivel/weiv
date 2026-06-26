@@ -1388,9 +1388,35 @@ body {
 
 .grooms-family-bg {
   z-index: 0;
-  background-image: url('/5thsection.jpeg');
   background-size: cover;
   background-position: center;
+}
+
+.grooms-family-section--ready .grooms-family-bg {
+  background-image: url('/5thsection.jpeg');
+}
+
+@media (max-width: 767px) {
+  .grooms-family-section--ready .grooms-family-bg {
+    background-image: url('/mobile/5thsection.webp');
+  }
+}
+
+.wedding-celebrations-section {
+  background-color: #140309;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.wedding-celebrations-section--ready {
+  background-image: url('/4thsectionbg.jpeg');
+}
+
+@media (max-width: 767px) {
+  .wedding-celebrations-section--ready {
+    background-image: url('/mobile/4thsectionbg.webp');
+  }
 }
 
 .grooms-family-shell {
@@ -1607,15 +1633,45 @@ body {
 }
 
 @media (max-width: 767px) {
+  .grooms-family-grid {
+    grid-template-columns: 1fr;
+    max-width: 22rem;
+    gap: 1.75rem;
+  }
+
+  .grooms-family-portrait-frame-dual {
+    max-width: 20rem;
+  }
+
   .grooms-family-parents {
     margin-top: -3.8rem;
+  }
+
+  .grooms-family-portrait-motion {
+    will-change: transform, opacity;
+  }
+
+  .grooms-family-portrait-image {
+    filter: drop-shadow(0 6px 8px rgba(2, 3, 8, 0.22))
+      drop-shadow(0 14px 18px rgba(3, 4, 12, 0.16));
+  }
+
+  .wedding-celebrations-section {
+    min-height: auto;
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
   }
 }
 
 @media (max-width: 640px) {
   .grooms-family-section {
-    padding-top: 5.7rem;
-    padding-bottom: 5.7rem;
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
+    min-height: auto;
+  }
+
+  .grooms-family-shell {
+    min-height: auto;
   }
 
   .grooms-family-title {
@@ -1628,18 +1684,25 @@ body {
   }
 
   .grooms-family-grid {
-    max-width: 34rem;
+    max-width: 22rem;
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.75rem;
+    margin-top: 2.25rem;
   }
 
   .grooms-family-card {
-    max-width: 34rem;
+    max-width: 22rem;
     margin-inline: auto;
   }
 
   .grooms-family-portrait-frame-dual {
-    max-width: 27rem;
+    max-width: 19.5rem;
+    margin-top: 1rem;
+  }
+
+  .grooms-family-card-label {
+    font-size: 0.92rem;
+    letter-spacing: 0.22em;
   }
 
   .grooms-family-subtitle {
@@ -1648,11 +1711,12 @@ body {
   }
 
   .grooms-family-parent-name {
-    font-size: 1.02rem;
+    font-size: 0.98rem;
   }
 
   .grooms-family-parents {
-    margin-top: -0.8rem;
+    margin-top: -0.55rem;
+    gap: 0.08rem;
   }
 }
 

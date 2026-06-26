@@ -6,14 +6,16 @@ import FloatingHeartTransition from '../components/FloatingHeartTransition'
 import InvitationHeroSection from '../components/InvitationHeroSection'
 import InviteSectionFallback from '../components/InviteSectionFallback'
 import useMobileScrollOptimizations from '../hooks/useMobileScrollOptimizations'
-import { runStagedInvitePreload } from '../utils/performance'
+import { CELEBRATION_MOBILE_ASSETS, isMobileViewport, runStagedInvitePreload } from '../utils/performance'
 
-const CELEBRATION_PRELOADS = [
-  '/engagement.png',
-  '/reception.png',
-  '/muhurutham.png',
-  '/4thsectionbg.jpeg',
-]
+const CELEBRATION_PRELOADS = isMobileViewport()
+  ? CELEBRATION_MOBILE_ASSETS
+  : [
+      '/engagement.webp',
+      '/reception.webp',
+      '/muhurutham.webp',
+      '/4thsectionbg.jpeg',
+    ]
 
 const OurStory = lazy(() => import('../components/OurStory'))
 const WeddingCelebrationsSection = lazy(() => import('../components/WeddingCelebrationsSection'))

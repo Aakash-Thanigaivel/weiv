@@ -35,10 +35,17 @@ export const ROAD_ASSET = '/roadthree.png'
 export const INTRO_HOLD_MS = 2000
 
 export const CELEBRATION_ASSETS = [
-  '/engagement.png',
-  '/reception.png',
-  '/muhurutham.png',
+  '/engagement.webp',
+  '/reception.webp',
+  '/muhurutham.webp',
   '/4thsectionbg.jpeg',
+]
+
+export const CELEBRATION_MOBILE_ASSETS = [
+  '/mobile/engagement.webp',
+  '/mobile/reception.webp',
+  '/mobile/muhurutham.webp',
+  '/mobile/4thsectionbg.webp',
 ]
 
 export const STORY_ASSETS = [
@@ -59,7 +66,21 @@ export const FAMILY_ASSETS = [
   '/groomfather.png',
   '/groommom.png',
   '/groommomnddad.png',
-  '/newarch.png',
+  '/newarch.webp',
+]
+
+export const FAMILY_MOBILE_ASSETS = [
+  '/mobile/5thsection.webp',
+  '/mobile/newarch.webp',
+]
+
+export const FAMILY_PORTRAIT_ASSETS = [
+  '/bridefather.png',
+  '/bridemother.png',
+  '/bridemomnddad.jpeg',
+  '/groomfather.png',
+  '/groommom.png',
+  '/groommomnddad.png',
 ]
 
 export const LATE_ASSETS = [
@@ -78,7 +99,7 @@ export const getCarLoadPromise = () => {
 }
 
 export const preloadCelebrationAssets = () => {
-  preloadImages(CELEBRATION_ASSETS)
+  preloadImages(isMobileViewport() ? CELEBRATION_MOBILE_ASSETS : CELEBRATION_ASSETS)
 }
 
 export const preloadStoryAssets = () => {
@@ -86,7 +107,18 @@ export const preloadStoryAssets = () => {
 }
 
 export const preloadFamilyAssets = () => {
-  preloadImages(FAMILY_ASSETS)
+  const assets = isMobileViewport()
+    ? [...FAMILY_MOBILE_ASSETS, ...FAMILY_PORTRAIT_ASSETS.slice(0, 2)]
+    : FAMILY_ASSETS
+  preloadImages(assets)
+}
+
+export const preloadFamilySlide = (index) => {
+  FAMILY_PORTRAIT_ASSETS.forEach((src, portraitIndex) => {
+    if (portraitIndex === index || portraitIndex === (index + 1) % 3) {
+      void loadImage(src)
+    }
+  })
 }
 
 export const preloadLateAssets = () => {
