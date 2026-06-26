@@ -286,6 +286,15 @@ export default function WeddingCelebrationsSection() {
   }, [])
 
   useEffect(() => {
+    if (!isNearView || !isMobile) return undefined
+
+    celebrationScrolls.forEach((event) => {
+      const preload = new Image()
+      preload.src = `/mobile/${event.imageName}.webp`
+    })
+  }, [isNearView, isMobile])
+
+  useEffect(() => {
     return () => {
       if (openTimeoutRef.current) {
         window.clearTimeout(openTimeoutRef.current)
@@ -299,11 +308,16 @@ export default function WeddingCelebrationsSection() {
 
   const triggerCinematicOpen = (index) => {
     setActiveScroll(index)
+
+    if (isMobile) {
+      return
+    }
+
     setGlowPulseToken(`${index}-${Date.now()}`)
 
     const nextBurst = {
       id: `${Date.now()}-${index}`,
-      particles: generateCelebrationParticles(sectionHeight, window.innerWidth < 768),
+      particles: generateCelebrationParticles(sectionHeight, false),
     }
     setParticleBurst(nextBurst)
 
@@ -325,6 +339,11 @@ export default function WeddingCelebrationsSection() {
 
     if (openTimeoutRef.current) {
       window.clearTimeout(openTimeoutRef.current)
+    }
+
+    if (isMobile) {
+      setActiveScroll(index)
+      return
     }
 
     setBouncingScroll(index)
@@ -456,12 +475,16 @@ export default function WeddingCelebrationsSection() {
                 whileInView={isMobile ? { opacity: 1, y: 0 } : { opacity: 1, y: 0, filter: 'blur(0px)' }}
                 viewport={{ once: true, amount: 0.3 }}
                 transition={{ duration: isMobile ? 0.55 : 0.75, delay: index * 0.12, ease: cinematicEase }}
-                animate={{
-                  scale: isOpen ? 1.045 : 1,
-                  opacity: shouldDim ? 0.42 : 1,
-                  y: isOpen ? -8 : 0,
-                  zIndex: isOpen ? 20 : 5,
-                }}
+                animate={
+                  isMobile
+                    ? { opacity: shouldDim ? 0.42 : 1, zIndex: isOpen ? 20 : 5 }
+                    : {
+                        scale: isOpen ? 1.045 : 1,
+                        opacity: shouldDim ? 0.42 : 1,
+                        y: isOpen ? -8 : 0,
+                        zIndex: isOpen ? 20 : 5,
+                      }
+                }
               >
                 <motion.div
                   className="relative"
@@ -485,14 +508,16 @@ export default function WeddingCelebrationsSection() {
                   className="pointer-events-none absolute inset-x-[-8%] -top-[9%] -bottom-[7%] z-0 rounded-[2.4rem] bg-[radial-gradient(circle_at_50%_42%,rgba(238,189,103,0.32)_0%,rgba(192,128,52,0.14)_35%,rgba(35,7,10,0)_72%)] blur-xl"
                   initial={false}
                   animate={
-                    isOpen && glowPulseToken?.startsWith(`${index}-`)
-                      ? {
-                          opacity: [0, 0.96, 0.72],
-                          scale: [0.95, 1.04, 1],
-                        }
-                      : { opacity: isOpen ? 0.72 : 0, scale: isOpen ? 1 : 0.96 }
+                    isMobile
+                      ? { opacity: isOpen ? 0.45 : 0, scale: 1 }
+                      : isOpen && glowPulseToken?.startsWith(`${index}-`)
+                        ? {
+                            opacity: [0, 0.96, 0.72],
+                            scale: [0.95, 1.04, 1],
+                          }
+                        : { opacity: isOpen ? 0.72 : 0, scale: isOpen ? 1 : 0.96 }
                   }
-                  transition={{ duration: isOpen ? 0.82 : 0.36, delay: isOpen ? 0.28 : 0, ease: cinematicEase }}
+                  transition={{ duration: isOpen ? (isMobile ? 0.3 : 0.82) : 0.36, delay: isOpen && !isMobile ? 0.28 : 0, ease: cinematicEase }}
                   aria-hidden="true"
                 />
 
@@ -519,29 +544,38 @@ export default function WeddingCelebrationsSection() {
                       : 'overflow-visible border border-transparent bg-transparent'
                   }`}
                   initial={false}
-                  animate={{
-                    minHeight: isOpen ? (isMobile ? '26.5rem' : '30.8rem') : '4.9rem',
-                    paddingTop: isOpen ? '0.95rem' : '1.95rem',
-                    paddingBottom: isOpen ? '0.95rem' : '1.95rem',
-                    borderRadius: isOpen
-                      ? '1rem 1rem 38% 38% / 0.95rem 0.95rem 13% 13%'
-                      : '999px',
-                    clipPath: isOpen ? 'inset(0% 0% 0% 0% round 2rem)' : 'none',
-                    scaleX: 1,
-                    boxShadow: isOpen
-                      ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
-                      : 'none',
-                  }}
-                  transition={{ duration: isMobile ? 0.62 : 0.9, ease: cinematicEase }}
+                  animate={
+                    isMobile
+                      ? {
+                          minHeight: isOpen ? '26.5rem' : '4.9rem',
+                          paddingTop: isOpen ? '0.95rem' : '1.95rem',
+                          paddingBottom: isOpen ? '0.95rem' : '1.95rem',
+                          borderRadius: isOpen ? '1.1rem 1.1rem 2rem 2rem' : '999px',
+                          boxShadow: isOpen
+                            ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
+                            : 'none',
+                        }
+                      : {
+                          minHeight: isOpen ? '30.8rem' : '4.9rem',
+                          paddingTop: isOpen ? '0.95rem' : '1.95rem',
+                          paddingBottom: isOpen ? '0.95rem' : '1.95rem',
+                          borderRadius: isOpen
+                            ? '1rem 1rem 38% 38% / 0.95rem 0.95rem 13% 13%'
+                            : '999px',
+                          clipPath: isOpen ? 'inset(0% 0% 0% 0% round 2rem)' : 'none',
+                          scaleX: 1,
+                          boxShadow: isOpen
+                            ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
+                            : 'none',
+                        }
+                  }
+                  transition={{ duration: isMobile ? 0.48 : 0.9, ease: cinematicEase }}
                 >
                   <motion.div
                     className="pointer-events-none absolute inset-x-[6%] top-[30%] z-20 h-[2.35rem] -translate-y-1/2 rounded-full border border-[#9a6936]/72 bg-[linear-gradient(to_bottom,#f2dfbe_0%,#e8cc9e_38%,#d8af77_100%)] shadow-[inset_0_1px_4px_rgba(255,245,222,0.45),inset_0_-2px_5px_rgba(92,56,24,0.26),0_8px_14px_rgba(8,2,3,0.34)]"
                     initial={false}
-                    animate={{
-                      opacity: isOpen ? 0 : 1,
-                      scaleX: isOpen ? 0.985 : 1,
-                    }}
-                    transition={{ duration: isOpen ? 0.18 : 0.32, ease: cinematicEase }}
+                    animate={{ opacity: isOpen ? 0 : 1, scaleX: 1 }}
+                    transition={{ duration: isOpen ? (isMobile ? 0.08 : 0.18) : 0.32, ease: cinematicEase }}
                     style={{ visibility: isOpen ? 'hidden' : 'visible' }}
                     aria-hidden={isOpen}
                   >
@@ -569,6 +603,8 @@ export default function WeddingCelebrationsSection() {
                         </span>
                   </motion.div>
 
+                  {isMobile ? null : (
+                  <>
                   <motion.div
                     className="pointer-events-none absolute inset-x-[16%] top-[0.8rem] h-[0.38rem] rounded-full bg-[linear-gradient(to_bottom,rgba(255,239,204,0.64),rgba(166,117,58,0.08))]"
                     initial={false}
@@ -636,22 +672,45 @@ export default function WeddingCelebrationsSection() {
                     transition={{ duration: 0.46, delay: isOpen ? 0.6 : 0, ease: cinematicEase }}
                     aria-hidden="true"
                   />
+                  </>
+                  )}
+
                   <motion.div
-                    className="relative z-10 mx-auto mt-1 h-px w-24 bg-[linear-gradient(to_right,transparent,#9a6b35,transparent)]"
+                    className="relative z-10 mx-auto mt-1 h-px bg-[linear-gradient(to_right,transparent,#9a6b35,transparent)]"
                     initial={false}
                     animate={{ opacity: isOpen ? 1 : 0.18, width: isOpen ? '7.5rem' : '4.25rem' }}
-                    transition={{ duration: 0.45, ease: cinematicEase }}
+                    transition={{ duration: isMobile ? 0.28 : 0.45, ease: cinematicEase }}
                   />
 
                   <motion.div
                     className="relative z-10 mt-2.5 overflow-hidden"
                     initial={false}
-                    animate={{
-                      height: isOpen ? (isMobile ? '24.2rem' : '28.4rem') : '0rem',
-                      opacity: isOpen ? 1 : 0,
-                    }}
-                    transition={{ duration: isMobile ? 0.5 : 0.76, delay: isOpen ? (isMobile ? 0.12 : 0.46) : 0, ease: cinematicEase }}
+                    animate={
+                      isMobile
+                        ? { maxHeight: isOpen ? '24rem' : '0px', opacity: isOpen ? 1 : 0 }
+                        : { height: isOpen ? '28.4rem' : '0rem', opacity: isOpen ? 1 : 0 }
+                    }
+                    transition={{ duration: isMobile ? 0.38 : 0.76, delay: isOpen ? (isMobile ? 0.16 : 0.46) : 0, ease: cinematicEase }}
                   >
+                    {isMobile ? (
+                      <div className={isOpen ? 'block' : 'pointer-events-none invisible'}>
+                        <figure className="relative mx-auto mb-3.5 w-full max-w-[13.5rem] overflow-hidden rounded-[1.02rem]">
+                          <div className="relative aspect-[4/5] overflow-hidden rounded-[0.96rem] bg-[#c8a06f]/10">
+                            <InvitePicture
+                              name={event.imageName}
+                              ext={event.imageExt}
+                              alt={event.imageAlt}
+                              loading="eager"
+                              fetchPriority="high"
+                              className={`h-full w-full ${event.imagePosition} object-cover`}
+                            />
+                          </div>
+                        </figure>
+                        <div className="mt-2 pb-0.5">
+                          <ScrollDetails details={event} isOpen={isOpen} baseDelay={0.22} isMobile={isMobile} />
+                        </div>
+                      </div>
+                    ) : (
                     <AnimatePresence initial={false}>
                       {isOpen ? (
                         <motion.div
@@ -662,11 +721,11 @@ export default function WeddingCelebrationsSection() {
                           transition={{ duration: 0.3, ease: cinematicEase }}
                         >
                           <motion.figure
-                            className="relative mx-auto mb-3.5 w-full max-w-[13.5rem] overflow-hidden rounded-[1.02rem] md:max-w-[15.2rem]"
-                            initial={isMobile ? { opacity: 0, y: 12, scale: 0.98 } : { opacity: 0, y: 12, scale: 0.965, filter: 'blur(7px)' }}
-                            animate={isMobile ? { opacity: 1, y: 0, scale: 1 } : { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-                            exit={isMobile ? { opacity: 0, y: 8, scale: 0.99 } : { opacity: 0, y: 8, scale: 0.98, filter: 'blur(5px)' }}
-                            transition={{ duration: isMobile ? 0.45 : 0.74, delay: isMobile ? 0.35 : 0.72, ease: cinematicEase }}
+                            className="relative mx-auto mb-3.5 w-full max-w-[15.2rem] overflow-hidden rounded-[1.02rem]"
+                            initial={{ opacity: 0, y: 12, scale: 0.965, filter: 'blur(7px)' }}
+                            animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+                            exit={{ opacity: 0, y: 8, scale: 0.98, filter: 'blur(5px)' }}
+                            transition={{ duration: 0.74, delay: 0.72, ease: cinematicEase }}
                             style={{ boxShadow: '0 8px 18px rgba(69, 38, 16, 0.14)' }}
                           >
                             <div className="relative aspect-[4/5] overflow-hidden rounded-[0.96rem] bg-[#c8a06f]/10">
@@ -682,11 +741,12 @@ export default function WeddingCelebrationsSection() {
                           </motion.figure>
 
                           <div className="mt-2 pb-0.5">
-                            <ScrollDetails details={event} isOpen={isOpen} baseDelay={isMobile ? 0.55 : 1.02} isMobile={isMobile} />
+                            <ScrollDetails details={event} isOpen={isOpen} baseDelay={1.02} isMobile={isMobile} />
                           </div>
                         </motion.div>
                       ) : null}
                     </AnimatePresence>
+                    )}
                   </motion.div>
 
                   <motion.div
@@ -695,40 +755,44 @@ export default function WeddingCelebrationsSection() {
                     initial={false}
                     animate={
                       isOpen
-                        ? {
-                            opacity: 0.95,
-                            y: [0, floatProfile.y * 0.2, 0, -floatProfile.y * 0.16, 0],
-                            x: [0, floatProfile.x * 0.24, 0, -floatProfile.x * 0.2, 0],
-                            scaleY: [1, 1.02, 0.995, 1],
-                          }
+                        ? isMobile
+                          ? { opacity: 0.95, y: 0, x: 0, scaleY: 1 }
+                          : {
+                              opacity: 0.95,
+                              y: [0, floatProfile.y * 0.2, 0, -floatProfile.y * 0.16, 0],
+                              x: [0, floatProfile.x * 0.24, 0, -floatProfile.x * 0.2, 0],
+                              scaleY: [1, 1.02, 0.995, 1],
+                            }
                         : { opacity: 0, y: -3, x: 0, scaleY: 0.9 }
                     }
                     transition={
                       isOpen
-                        ? {
-                            opacity: { duration: 0.42, delay: 0.48, ease: cinematicEase },
-                            y: {
-                              duration: floatProfile.duration + 0.9,
-                              ease: 'easeInOut',
-                              repeat: Number.POSITIVE_INFINITY,
-                              repeatType: 'mirror',
-                              delay: 1.12 + floatProfile.delay,
-                            },
-                            x: {
-                              duration: floatProfile.duration + 1.2,
-                              ease: 'easeInOut',
-                              repeat: Number.POSITIVE_INFINITY,
-                              repeatType: 'mirror',
-                              delay: 1.12 + floatProfile.delay,
-                            },
-                            scaleY: {
-                              duration: floatProfile.duration + 1,
-                              ease: 'easeInOut',
-                              repeat: Number.POSITIVE_INFINITY,
-                              repeatType: 'mirror',
-                              delay: 1.12 + floatProfile.delay,
-                            },
-                          }
+                        ? isMobile
+                          ? { duration: 0.3, ease: cinematicEase }
+                          : {
+                              opacity: { duration: 0.42, delay: 0.48, ease: cinematicEase },
+                              y: {
+                                duration: floatProfile.duration + 0.9,
+                                ease: 'easeInOut',
+                                repeat: Number.POSITIVE_INFINITY,
+                                repeatType: 'mirror',
+                                delay: 1.12 + floatProfile.delay,
+                              },
+                              x: {
+                                duration: floatProfile.duration + 1.2,
+                                ease: 'easeInOut',
+                                repeat: Number.POSITIVE_INFINITY,
+                                repeatType: 'mirror',
+                                delay: 1.12 + floatProfile.delay,
+                              },
+                              scaleY: {
+                                duration: floatProfile.duration + 1,
+                                ease: 'easeInOut',
+                                repeat: Number.POSITIVE_INFINITY,
+                                repeatType: 'mirror',
+                                delay: 1.12 + floatProfile.delay,
+                              },
+                            }
                         : { duration: 0.3, ease: cinematicEase }
                     }
                     aria-hidden="true"

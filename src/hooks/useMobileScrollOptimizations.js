@@ -20,6 +20,7 @@ export default function useMobileScrollOptimizations() {
       const atTop =
         window.scrollY <= TOP_SCROLL_TOLERANCE &&
         (window.visualViewport?.offsetTop ?? 0) <= TOP_SCROLL_TOLERANCE
+      const inCarPinSection = window.scrollY < window.innerHeight * 1.2
 
       if (atTop) {
         document.body.style.overscrollBehaviorY = 'auto'
@@ -33,6 +34,15 @@ export default function useMobileScrollOptimizations() {
 
       document.body.style.overscrollBehaviorY = 'none'
 
+      // Keep normalizeScroll off during the pinned car intro — toggling it mid-scroll shifts the road/base.
+      if (inCarPinSection) {
+        if (normalizeEnabled) {
+          ScrollTrigger.normalizeScroll(false)
+          normalizeEnabled = false
+        }
+        return
+      }
+
       if (!normalizeEnabled) {
         ScrollTrigger.normalizeScroll(true)
         normalizeEnabled = true
@@ -41,19 +51,17 @@ export default function useMobileScrollOptimizations() {
 
     syncScrollMode()
 
-    const onRefresh = () => {
+    const onResize = () => {
       syncScrollMode()
       ScrollTrigger.refresh()
     }
 
     window.addEventListener('scroll', syncScrollMode, { passive: true })
-    window.visualViewport?.addEventListener('resize', onRefresh)
-    window.visualViewport?.addEventListener('scroll', onRefresh)
+    window.visualViewport?.addEventListener('resize', onResize)
 
     return () => {
       window.removeEventListener('scroll', syncScrollMode)
-      window.visualViewport?.removeEventListener('resize', onRefresh)
-      window.visualViewport?.removeEventListener('scroll', onRefresh)
+      window.visualViewport?.removeEventListener('resize', onResize)
 
       if (normalizeEnabled) {
         ScrollTrigger.normalizeScroll(false)

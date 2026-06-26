@@ -48,10 +48,17 @@ export default function CinematicCarScrollSection() {
           const scrollFactor = isMobile ? -0.48 : isTablet ? -0.54 : -0.60
           const startScale = isMobile ? 0.95 : 0.93
           const endScale = isMobile ? 1.03 : 1.07
-          const roadEndScale = isMobile ? 1.14 : isTablet ? 1.08 : 1.016
-          const roadEndY = isMobile ? -8 : isTablet ? -5 : -2.8
+          const roadEndScale = isMobile ? 1 : isTablet ? 1.08 : 1.016
+          const roadEndY = isMobile ? 0 : isTablet ? -5 : -2.8
           const viewportHeight = () => getViewportHeight()
           const titleLines = namesRef.current.querySelectorAll('.cinematic-intro-line')
+
+          gsap.set(roadRef.current, {
+            yPercent: 0,
+            scale: 1,
+            force3D: true,
+            transformOrigin: 'center 36%',
+          })
 
           gsap.set(carRef.current, {
             xPercent: -50,
@@ -84,8 +91,9 @@ export default function CinematicCarScrollSection() {
               end: isMobile ? '+=118%' : '+=200%',
               pin: true,
               pinSpacing: true,
-              scrub: isMobile ? 0.58 : isTablet ? 1.2 : 1.8,
-              anticipatePin: isMobile ? 0 : 1,
+              pinType: isMobile ? 'fixed' : 'transform',
+              scrub: isMobile ? 0.85 : isTablet ? 1.2 : 1.8,
+              anticipatePin: 0,
               fastScrollEnd: false,
               invalidateOnRefresh: true,
             },
@@ -93,8 +101,8 @@ export default function CinematicCarScrollSection() {
 
           scrollTimeline.scrollTrigger.disable()
 
-          scrollTimeline
-            .to(
+          if (!isMobile) {
+            scrollTimeline.to(
               roadRef.current,
               {
                 yPercent: roadEndY,
@@ -104,6 +112,9 @@ export default function CinematicCarScrollSection() {
               },
               0,
             )
+          }
+
+          scrollTimeline
             .to(
               carRef.current,
               {
@@ -141,13 +152,12 @@ export default function CinematicCarScrollSection() {
           const enableScroll = () => {
             if (cancelled || scrollReady) return
             scrollReady = true
-            // Re-record tween start values from intro end pose so the first scrub doesn't jump.
+
             scrollTimeline.invalidate()
-            scrollTimeline.progress(0)
+            scrollTimeline.progress(0, true)
             scrollTimeline.scrollTrigger.enable()
-            requestAnimationFrame(() => {
-              ScrollTrigger.refresh()
-            })
+
+            ScrollTrigger.refresh(true)
           }
 
           const playIntro = () => {
