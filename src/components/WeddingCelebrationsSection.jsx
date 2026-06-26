@@ -271,6 +271,23 @@ function MobileCelebrationScroll({ event, isOpen }) {
   return (
     <div className={`celebration-scroll-mobile${isOpen ? ' is-open' : ''}`}>
       <div className="celebration-scroll-mobile-closed" aria-hidden={isOpen}>
+        <div className="celebration-scroll-mobile-rod" aria-hidden="true">
+          <span className="celebration-scroll-mobile-rod-highlight celebration-scroll-mobile-rod-highlight-top" />
+          <span className="celebration-scroll-mobile-rod-highlight celebration-scroll-mobile-rod-highlight-bottom" />
+
+          <span className="celebration-scroll-mobile-rod-cap celebration-scroll-mobile-rod-cap-left" />
+          <span className="celebration-scroll-mobile-rod-cap celebration-scroll-mobile-rod-cap-right" />
+
+          <span className="celebration-scroll-mobile-rod-dot celebration-scroll-mobile-rod-dot-left" />
+          <span className="celebration-scroll-mobile-rod-dot celebration-scroll-mobile-rod-dot-right" />
+
+          <span className="celebration-scroll-mobile-rod-stem celebration-scroll-mobile-rod-stem-left" />
+          <span className="celebration-scroll-mobile-rod-tassel celebration-scroll-mobile-rod-tassel-left" />
+
+          <span className="celebration-scroll-mobile-rod-stem celebration-scroll-mobile-rod-stem-right" />
+          <span className="celebration-scroll-mobile-rod-tassel celebration-scroll-mobile-rod-tassel-right" />
+        </div>
+
         <div className="celebration-scroll-mobile-pill">
           <span className="celebration-scroll-mobile-pill-title font-heading uppercase">{event.title}</span>
           <span className="celebration-scroll-mobile-pill-hint font-subheading uppercase">tap to open</span>

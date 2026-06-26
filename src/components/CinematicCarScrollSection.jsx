@@ -48,22 +48,19 @@ export default function CinematicCarScrollSection() {
           const scrollFactor = isMobile ? -0.48 : isTablet ? -0.54 : -0.60
           const startScale = isMobile ? 0.95 : 0.93
           const endScale = isMobile ? 1.03 : 1.07
-          const roadEndScale = isMobile ? 1 : isTablet ? 1.08 : 1.016
-          const roadEndY = isMobile ? 0 : isTablet ? -5 : -2.8
           const viewportHeight = () => getViewportHeight()
           const titleLines = namesRef.current.querySelectorAll('.cinematic-intro-line')
 
           gsap.set(roadRef.current, {
-            yPercent: 0,
-            scale: 1,
-            force3D: true,
-            transformOrigin: 'center 36%',
+            clearProps: 'transform',
           })
 
+          const centerCarWrapper = isMobile
+
           gsap.set(carWrapperRef.current, {
-            xPercent: -50,
-            left: '50%',
-            x: 0,
+            ...(centerCarWrapper
+              ? { xPercent: -50, left: '50%', x: 0 }
+              : { left: 0, right: 0, x: 0, xPercent: 0 }),
             y: () => viewportHeight() * startFactor,
             scale: startScale,
             opacity: 0,
@@ -107,24 +104,17 @@ export default function CinematicCarScrollSection() {
                   self.scroll(self.start)
                 }
               },
+              onLeave: () => {
+                gsap.set(carWrapperRef.current, { autoAlpha: 0 })
+              },
+              onEnterBack: () => {
+                gsap.set(carWrapperRef.current, { autoAlpha: 1 })
+              },
             },
           })
 
           if (!isMobile) {
             scrollTimeline.scrollTrigger.disable()
-          }
-
-          if (!isMobile) {
-            scrollTimeline.to(
-              roadRef.current,
-              {
-                yPercent: roadEndY,
-                scale: roadEndScale,
-                duration: 1,
-                ease: 'sine.inOut',
-              },
-              0,
-            )
           }
 
           scrollTimeline.fromTo(
@@ -144,6 +134,15 @@ export default function CinematicCarScrollSection() {
             },
             0,
           )
+            .to(
+              carWrapperRef.current,
+              {
+                opacity: 0,
+                duration: 0.1,
+                ease: 'none',
+              },
+              0.9,
+            )
             .to(
               saveDateGroupRef.current,
               {
@@ -173,9 +172,9 @@ export default function CinematicCarScrollSection() {
             introComplete = true
 
             gsap.set(carWrapperRef.current, {
-              xPercent: -50,
-              left: '50%',
-              x: 0,
+              ...(centerCarWrapper
+                ? { xPercent: -50, left: '50%', x: 0 }
+                : { left: 0, right: 0, x: 0, xPercent: 0 }),
               y: introY(),
               scale: introScale,
               opacity: 1,
@@ -265,9 +264,23 @@ export default function CinematicCarScrollSection() {
 
   return (
     <section ref={sectionRef} className="cinematic-car-section" aria-label="Cinematic wedding car introduction">
-      <div ref={roadRef} className="cinematic-road-layer" aria-hidden="true" />
-      <div className="cinematic-road-bottom-filler" aria-hidden="true" />
-      <div className="cinematic-road-atmosphere" aria-hidden="true" />
+      <div className="cinematic-scene-layer" aria-hidden="true">
+        <div ref={roadRef} className="cinematic-road-layer" />
+        <div className="cinematic-road-bottom-filler" />
+        <div className="cinematic-road-atmosphere" />
+      </div>
+      <div className="cinematic-car-clip" aria-hidden="true">
+        <div ref={carWrapperRef} className="cinematic-car-wrapper">
+          <img
+            src="/flocar.png"
+            alt="Wedding car"
+            className="cinematic-car-image"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+          />
+        </div>
+      </div>
       <div className="cinematic-car-overlay-content" aria-hidden="true">
         <h1 ref={namesRef} className="cinematic-couple-title" aria-label="Aakash loves Viji">
           <span className="cinematic-couple-name cinematic-intro-line">Aakash</span>
@@ -282,16 +295,6 @@ export default function CinematicCarScrollSection() {
           <p className="cinematic-save-date-label">DATE</p>
           <p className="cinematic-save-date-value">05/07/26</p>
         </div>
-      </div>
-      <div ref={carWrapperRef} className="cinematic-car-wrapper" aria-hidden="true">
-        <img
-          src="/flocar.png"
-          alt="Wedding car"
-          className="cinematic-car-image"
-          loading="eager"
-          fetchPriority="high"
-          decoding="async"
-        />
       </div>
     </section>
   )

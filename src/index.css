@@ -834,12 +834,30 @@ body {
 
 .cinematic-car-section {
   position: relative;
+  z-index: 2;
   width: 100%;
   height: 100dvh;
   min-height: 100dvh;
   overflow: hidden;
   isolation: isolate;
   background: #17090d;
+  contain: paint;
+}
+
+.cinematic-scene-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.cinematic-car-clip {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .cinematic-road-layer {
@@ -850,8 +868,8 @@ body {
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center center;
-  transform-origin: center 42%;
-  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
 }
 
 .cinematic-road-bottom-filler {
@@ -1000,7 +1018,6 @@ body {
 .cinematic-car-wrapper {
   position: absolute;
   inset: 0;
-  z-index: 3;
   pointer-events: none;
   will-change: transform;
 }
@@ -1013,6 +1030,7 @@ body {
   max-width: 43vw;
   height: auto;
   object-fit: contain;
+  transform: translateX(-50%);
   filter: drop-shadow(0 26px 44px rgba(0, 0, 0, 0.52));
   will-change: transform;
 }
@@ -1337,9 +1355,7 @@ body {
     inset: -18% -3%;
     background-size: cover;
     background-position: center 38%;
-    transform-origin: center 36%;
     transform: translate3d(0, 0, 0);
-    will-change: auto;
     backface-visibility: hidden;
   }
 
@@ -1371,7 +1387,7 @@ body {
     border: 1px solid transparent;
     border-radius: 999px;
     background: transparent;
-    overflow: hidden;
+    overflow: visible;
     transition:
       min-height 0.46s cubic-bezier(0.22, 1, 0.36, 1),
       padding 0.46s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1384,6 +1400,7 @@ body {
   .celebration-scroll-mobile.is-open {
     min-height: 26.5rem;
     padding: 0.95rem 1.25rem;
+    overflow: hidden;
     border-color: rgba(177, 130, 69, 0.55);
     border-radius: 1.1rem 1.1rem 2rem 2rem;
     background: linear-gradient(
@@ -1410,6 +1427,122 @@ body {
     pointer-events: none;
   }
 
+  .celebration-scroll-mobile-rod {
+    position: absolute;
+    left: 6%;
+    right: 6%;
+    top: 50%;
+    z-index: 2;
+    height: 2.35rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    border: 1px solid rgba(154, 105, 54, 0.72);
+    background: linear-gradient(to bottom, #f2dfbe 0%, #e8cc9e 38%, #d8af77 100%);
+    box-shadow:
+      inset 0 1px 4px rgba(255, 245, 222, 0.45),
+      inset 0 -2px 5px rgba(92, 56, 24, 0.26),
+      0 8px 14px rgba(8, 2, 3, 0.34);
+    pointer-events: none;
+  }
+
+  .celebration-scroll-mobile-rod-highlight {
+    position: absolute;
+    left: 8%;
+    right: 8%;
+    height: 1px;
+    border-radius: 999px;
+  }
+
+  .celebration-scroll-mobile-rod-highlight-top {
+    top: 0.18rem;
+    background: rgba(255, 240, 205, 0.7);
+  }
+
+  .celebration-scroll-mobile-rod-highlight-bottom {
+    bottom: 0.16rem;
+    background: rgba(142, 90, 39, 0.32);
+  }
+
+  .celebration-scroll-mobile-rod-cap {
+    position: absolute;
+    top: 50%;
+    width: 1.38rem;
+    height: 1.38rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    border: 1px solid rgba(135, 87, 42, 0.78);
+    background: radial-gradient(circle at 34% 30%, #efcd92 0%, #be8342 58%, #7f4f24 100%);
+    box-shadow: 0 4px 8px rgba(10, 2, 3, 0.28);
+  }
+
+  .celebration-scroll-mobile-rod-cap-left {
+    left: -0.66rem;
+  }
+
+  .celebration-scroll-mobile-rod-cap-right {
+    right: -0.66rem;
+  }
+
+  .celebration-scroll-mobile-rod-dot {
+    position: absolute;
+    top: 50%;
+    width: 0.46rem;
+    height: 0.46rem;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: rgba(183, 125, 64, 0.85);
+  }
+
+  .celebration-scroll-mobile-rod-dot-left {
+    left: -1.2rem;
+  }
+
+  .celebration-scroll-mobile-rod-dot-right {
+    right: -1.2rem;
+  }
+
+  .celebration-scroll-mobile-rod-stem {
+    position: absolute;
+    top: 1.28rem;
+    width: 0.22rem;
+    height: 1.14rem;
+    border-radius: 0 0 999px 999px;
+    background: linear-gradient(to bottom, #d8ad76, #9f6430);
+    box-shadow: 0 2px 5px rgba(10, 2, 3, 0.2);
+  }
+
+  .celebration-scroll-mobile-rod-stem-left {
+    left: -1.14rem;
+  }
+
+  .celebration-scroll-mobile-rod-stem-right {
+    right: -1.14rem;
+  }
+
+  .celebration-scroll-mobile-rod-tassel {
+    position: absolute;
+    top: 2.14rem;
+    width: 0.46rem;
+    height: 0.86rem;
+    opacity: 0.76;
+    background: repeating-linear-gradient(
+      to right,
+      #945a29 0,
+      #945a29 1.2px,
+      #c98c4a 1.2px,
+      #c98c4a 2.4px
+    );
+    clip-path: polygon(50% 0%, 100% 26%, 84% 100%, 16% 100%, 0% 26%);
+  }
+
+  .celebration-scroll-mobile-rod-tassel-left {
+    left: -1.22rem;
+  }
+
+  .celebration-scroll-mobile-rod-tassel-right {
+    right: -1.22rem;
+  }
+
   .celebration-scroll-mobile.is-open .celebration-scroll-mobile-closed {
     opacity: 0;
     visibility: hidden;
@@ -1417,6 +1550,8 @@ body {
   }
 
   .celebration-scroll-mobile-pill {
+    position: relative;
+    z-index: 3;
     display: flex;
     width: 88%;
     flex-direction: column;
@@ -1424,13 +1559,10 @@ body {
     justify-content: center;
     gap: 0.28rem;
     border-radius: 999px;
-    border: 1px solid rgba(154, 105, 54, 0.72);
-    background: linear-gradient(to bottom, #f2dfbe 0%, #e8cc9e 38%, #d8af77 100%);
+    border: 1px solid transparent;
+    background: transparent;
     padding: 0.72rem 1rem;
-    box-shadow:
-      inset 0 1px 4px rgba(255, 245, 222, 0.45),
-      inset 0 -2px 5px rgba(92, 56, 24, 0.26),
-      0 8px 14px rgba(8, 2, 3, 0.34);
+    box-shadow: none;
   }
 
   .celebration-scroll-mobile-pill-title {
@@ -2035,7 +2167,6 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cinematic-road-layer,
   .cinematic-car-wrapper {
     transform: none !important;
   }

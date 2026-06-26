@@ -46,7 +46,7 @@ export default function InvitationHeroSection() {
   }, [])
 
   return (
-    <section id="hero" className="relative -mt-px min-h-[100dvh] w-full overflow-hidden bg-[#2a0912]">
+    <section id="hero" className="relative z-10 -mt-px min-h-[100dvh] w-full overflow-hidden bg-[#2a0912]">
       <div className="cinematic-hero-bg absolute inset-0 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: 'url(/VYS00213.jpeg)' }} />
       <div className="cinematic-light-glow absolute inset-0" />
       <div className="grain-overlay absolute inset-0" />
