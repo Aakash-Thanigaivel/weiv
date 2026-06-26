@@ -1,7 +1,19 @@
-import { getInviteImageSources } from '../utils/imageAssets'
+const ROOT_WEBP = new Set(['engagement', 'reception', 'muhurutham', 'newarch'])
+const MOBILE_WEBP = new Set([
+  'engagement',
+  'reception',
+  'muhurutham',
+  'newarch',
+  'bridefather',
+  'bridemother',
+  'bridemomnddad',
+  'groomfather',
+  'groommom',
+  'groommomnddad',
+])
 
 /**
- * Responsive image with Vercel CDN (production), local WebP, and raster fallback.
+ * Reliable responsive images: mobile WebP when available, root WebP on desktop, raster fallback.
  */
 export default function InvitePicture({
   name,
@@ -12,21 +24,19 @@ export default function InvitePicture({
   decoding = 'async',
   fetchPriority,
   sizes,
-  mobileWidth = 480,
-  desktopWidth = 1024,
 }) {
-  const sources = getInviteImageSources({ name, ext, mobileWidth, desktopWidth })
+  const fallback = `/${name}.${ext}`
 
   return (
     <picture>
-      <source
-        media="(max-width: 767px)"
-        srcSet={sources.mobile}
-        type="image/webp"
-      />
-      <source srcSet={sources.desktop} type="image/webp" />
+      {MOBILE_WEBP.has(name) ? (
+        <source media="(max-width: 767px)" srcSet={`/mobile/${name}.webp`} type="image/webp" />
+      ) : null}
+      {ROOT_WEBP.has(name) ? (
+        <source srcSet={`/${name}.webp`} type="image/webp" />
+      ) : null}
       <img
-        src={sources.fallback}
+        src={fallback}
         alt={alt}
         className={className}
         loading={loading}

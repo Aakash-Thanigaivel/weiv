@@ -5,6 +5,9 @@
     "minimumCacheTTL": 86400
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/((?!_vercel|assets|mobile|.*\\.(?:png|jpe?g|webp|svg|gif|ico|mp3|mp4|woff2?|ttf|eot)).*)",
+      "destination": "/index.html"
+    }
   ]
 }
