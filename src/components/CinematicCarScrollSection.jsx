@@ -45,7 +45,7 @@ export default function CinematicCarScrollSection() {
           const { isMobile, isTablet } = mqContext.conditions
           const startFactor = isMobile ? 0.62 : isTablet ? 0.68 : 0.74
           const restFactor = isMobile ? 0.16 : isTablet ? 0.19 : 0.22
-          const scrollFactor = isMobile ? -0.48 : isTablet ? -0.54 : -0.60
+          const scrollFactor = isMobile ? -0.76 : isTablet ? -0.82 : -0.88
           const startScale = isMobile ? 0.95 : 0.93
           const endScale = isMobile ? 1.03 : 1.07
           const viewportHeight = () => getViewportHeight()
@@ -105,7 +105,11 @@ export default function CinematicCarScrollSection() {
                 }
               },
               onLeave: () => {
-                gsap.set(carWrapperRef.current, { autoAlpha: 0 })
+                gsap.to(carWrapperRef.current, {
+                  autoAlpha: 0,
+                  duration: 0.18,
+                  ease: 'power1.in',
+                })
               },
               onEnterBack: () => {
                 gsap.set(carWrapperRef.current, { autoAlpha: 1 })
@@ -134,15 +138,6 @@ export default function CinematicCarScrollSection() {
             },
             0,
           )
-            .to(
-              carWrapperRef.current,
-              {
-                opacity: 0,
-                duration: 0.1,
-                ease: 'none',
-              },
-              0.9,
-            )
             .to(
               saveDateGroupRef.current,
               {

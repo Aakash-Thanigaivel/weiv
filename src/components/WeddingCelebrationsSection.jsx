@@ -294,6 +294,21 @@ function MobileCelebrationScroll({ event, isOpen }) {
         </div>
       </div>
 
+      <div className="celebration-scroll-mobile-open-header" aria-hidden={!isOpen}>
+        <div className="celebration-scroll-mobile-open-top-rod" aria-hidden="true">
+          <span className="celebration-scroll-mobile-open-top-rod-highlight" />
+          <span className="celebration-scroll-mobile-open-top-rod-cap celebration-scroll-mobile-open-top-rod-cap-left" />
+          <span className="celebration-scroll-mobile-open-top-rod-cap celebration-scroll-mobile-open-top-rod-cap-right" />
+        </div>
+        <div className="celebration-scroll-mobile-open-shine" aria-hidden="true" />
+        <div className="celebration-scroll-mobile-open-seal" aria-hidden="true">
+          <span className="celebration-scroll-mobile-open-seal-line celebration-scroll-mobile-open-seal-line-left" />
+          <span className="celebration-scroll-mobile-open-seal-line celebration-scroll-mobile-open-seal-line-right" />
+          <span className="celebration-scroll-mobile-open-seal-sphere" />
+          <span className="celebration-scroll-mobile-open-seal-dot" />
+        </div>
+      </div>
+
       <div className="celebration-scroll-mobile-divider" aria-hidden={!isOpen} />
 
       <div className="celebration-scroll-mobile-panel" aria-hidden={!isOpen}>
