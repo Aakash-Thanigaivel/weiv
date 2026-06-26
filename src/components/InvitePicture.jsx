@@ -1,6 +1,7 @@
+import { getInviteImageSources } from '../utils/imageAssets'
+
 /**
- * Serves WebP on supported browsers with a smaller mobile variant.
- * Falls back to the original raster in public/.
+ * Responsive image with Vercel CDN (production), local WebP, and raster fallback.
  */
 export default function InvitePicture({
   name,
@@ -11,17 +12,21 @@ export default function InvitePicture({
   decoding = 'async',
   fetchPriority,
   sizes,
+  mobileWidth = 480,
+  desktopWidth = 1024,
 }) {
-  const fallback = `/${name}.${ext}`
-  const desktopWebp = `/${name}.webp`
-  const mobileWebp = `/mobile/${name}.webp`
+  const sources = getInviteImageSources({ name, ext, mobileWidth, desktopWidth })
 
   return (
     <picture>
-      <source media="(max-width: 767px)" srcSet={mobileWebp} type="image/webp" />
-      <source srcSet={desktopWebp} type="image/webp" />
+      <source
+        media="(max-width: 767px)"
+        srcSet={sources.mobile}
+        type="image/webp"
+      />
+      <source srcSet={sources.desktop} type="image/webp" />
       <img
-        src={fallback}
+        src={sources.fallback}
         alt={alt}
         className={className}
         loading={loading}

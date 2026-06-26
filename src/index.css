@@ -92,7 +92,7 @@ html {
   }
 
   body {
-    overscroll-behavior-y: none;
+    overscroll-behavior-y: auto;
     touch-action: pan-y;
     -webkit-tap-highlight-color: transparent;
   }
@@ -1618,6 +1618,70 @@ body {
   text-shadow: 0 0 14px rgba(12, 3, 6, 0.42);
 }
 
+.grooms-family-mobile {
+  width: 100%;
+  max-width: 22rem;
+  margin-inline: auto;
+}
+
+.grooms-family-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-bottom: 1.15rem;
+}
+
+.grooms-family-tab {
+  border: 1px solid rgba(243, 216, 161, 0.34);
+  border-radius: 999px;
+  background: rgba(23, 9, 13, 0.42);
+  color: rgba(243, 216, 161, 0.78);
+  padding: 0.48rem 1.05rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.24em;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+
+.grooms-family-tab--active {
+  border-color: rgba(243, 216, 161, 0.82);
+  background: rgba(243, 216, 161, 0.16);
+  color: rgba(255, 241, 214, 0.98);
+}
+
+.grooms-family-card--mobile {
+  width: 100%;
+}
+
+.grooms-family-photo-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.55rem;
+  margin-top: 0.85rem;
+}
+
+.grooms-family-photo-dot {
+  width: 0.52rem;
+  height: 0.52rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(243, 216, 161, 0.28);
+  padding: 0;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.grooms-family-photo-dot--active {
+  transform: scale(1.18);
+  background: rgba(243, 216, 161, 0.92);
+}
+
+.grooms-family-swipe-hint {
+  margin: 0.65rem 0 0;
+  font-size: 0.58rem;
+  letter-spacing: 0.22em;
+  color: rgba(243, 216, 161, 0.58);
+  text-align: center;
+}
+
 @media (max-width: 1024px) {
   .grooms-family-copy {
     max-width: 36rem;
@@ -1698,6 +1762,10 @@ body {
   .grooms-family-portrait-frame-dual {
     max-width: 19.5rem;
     margin-top: 1rem;
+  }
+
+  .grooms-family-card--mobile .grooms-family-parents {
+    margin-top: 0.35rem;
   }
 
   .grooms-family-card-label {

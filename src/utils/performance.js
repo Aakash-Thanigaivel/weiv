@@ -72,16 +72,23 @@ export const FAMILY_ASSETS = [
 export const FAMILY_MOBILE_ASSETS = [
   '/mobile/5thsection.webp',
   '/mobile/newarch.webp',
+  '/mobile/bridefather.webp',
+  '/mobile/bridemother.webp',
 ]
 
 export const FAMILY_PORTRAIT_ASSETS = [
-  '/bridefather.png',
-  '/bridemother.png',
-  '/bridemomnddad.jpeg',
-  '/groomfather.png',
-  '/groommom.png',
-  '/groommomnddad.png',
+  { name: 'bridefather', ext: 'png' },
+  { name: 'bridemother', ext: 'png' },
+  { name: 'bridemomnddad', ext: 'jpeg' },
+  { name: 'groomfather', ext: 'png' },
+  { name: 'groommom', ext: 'png' },
+  { name: 'groommomnddad', ext: 'png' },
 ]
+
+const portraitSrc = (portrait, mobile = false) =>
+  mobile
+    ? `/mobile/${portrait.name}.webp`
+    : `/${portrait.name}.${portrait.ext}`
 
 export const LATE_ASSETS = [
   '/frame.png',
@@ -107,17 +114,35 @@ export const preloadStoryAssets = () => {
 }
 
 export const preloadFamilyAssets = () => {
-  const assets = isMobileViewport()
-    ? [...FAMILY_MOBILE_ASSETS, ...FAMILY_PORTRAIT_ASSETS.slice(0, 2)]
-    : FAMILY_ASSETS
-  preloadImages(assets)
+  const mobile = isMobileViewport()
+
+  if (mobile) {
+    preloadImages([
+      ...FAMILY_MOBILE_ASSETS,
+      portraitSrc(FAMILY_PORTRAIT_ASSETS[0], true),
+      portraitSrc(FAMILY_PORTRAIT_ASSETS[1], true),
+    ])
+    return
+  }
+
+  preloadImages(FAMILY_ASSETS)
 }
 
-export const preloadFamilySlide = (index) => {
-  FAMILY_PORTRAIT_ASSETS.forEach((src, portraitIndex) => {
-    if (portraitIndex === index || portraitIndex === (index + 1) % 3) {
-      void loadImage(src)
-    }
+export const preloadFamilySlide = (index, familyKey = null) => {
+  const mobile = isMobileViewport()
+  const indexes = [index, (index + 1) % 3]
+
+  if (familyKey === 'bride' || familyKey === 'groom') {
+    const start = familyKey === 'bride' ? 0 : 3
+    indexes.forEach((photoIndex) => {
+      void loadImage(portraitSrc(FAMILY_PORTRAIT_ASSETS[start + photoIndex], mobile))
+    })
+    return
+  }
+
+  indexes.forEach((photoIndex) => {
+    void loadImage(portraitSrc(FAMILY_PORTRAIT_ASSETS[photoIndex], mobile))
+    void loadImage(portraitSrc(FAMILY_PORTRAIT_ASSETS[photoIndex + 3], mobile))
   })
 }
 

@@ -1,4 +1,9 @@
 {
+  "images": {
+    "sizes": [360, 480, 640, 960, 1024, 1536],
+    "formats": ["image/webp"],
+    "minimumCacheTTL": 86400
+  },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
