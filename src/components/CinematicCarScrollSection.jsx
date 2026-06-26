@@ -84,9 +84,9 @@ export default function CinematicCarScrollSection() {
               end: isMobile ? '+=118%' : '+=200%',
               pin: true,
               pinSpacing: true,
-              scrub: isMobile ? 0.42 : isTablet ? 1.2 : 1.8,
-              anticipatePin: 1,
-              fastScrollEnd: isMobile,
+              scrub: isMobile ? 0.58 : isTablet ? 1.2 : 1.8,
+              anticipatePin: isMobile ? 0 : 1,
+              fastScrollEnd: false,
               invalidateOnRefresh: true,
             },
           })
@@ -141,9 +141,13 @@ export default function CinematicCarScrollSection() {
           const enableScroll = () => {
             if (cancelled || scrollReady) return
             scrollReady = true
+            // Re-record tween start values from intro end pose so the first scrub doesn't jump.
+            scrollTimeline.invalidate()
+            scrollTimeline.progress(0)
             scrollTimeline.scrollTrigger.enable()
-            scrollTimeline.scrollTrigger.refresh()
-            ScrollTrigger.refresh()
+            requestAnimationFrame(() => {
+              ScrollTrigger.refresh()
+            })
           }
 
           const playIntro = () => {
@@ -204,16 +208,14 @@ export default function CinematicCarScrollSection() {
       }
     }, sectionRef)
 
-    const onViewportChange = () => ScrollTrigger.refresh()
+    const onViewportResize = () => ScrollTrigger.refresh()
 
-    window.visualViewport?.addEventListener('resize', onViewportChange)
-    window.visualViewport?.addEventListener('scroll', onViewportChange)
+    window.visualViewport?.addEventListener('resize', onViewportResize)
 
     return () => {
       cancelled = true
       introTimeline?.kill()
-      window.visualViewport?.removeEventListener('resize', onViewportChange)
-      window.visualViewport?.removeEventListener('scroll', onViewportChange)
+      window.visualViewport?.removeEventListener('resize', onViewportResize)
       context.revert()
     }
   }, [])

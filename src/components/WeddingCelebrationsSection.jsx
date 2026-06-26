@@ -301,12 +301,6 @@ export default function WeddingCelebrationsSection() {
     setActiveScroll(index)
     setGlowPulseToken(`${index}-${Date.now()}`)
 
-    if (window.innerWidth < 768) {
-      window.setTimeout(() => {
-        articleRefs.current[index]?.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }, 80)
-    }
-
     const nextBurst = {
       id: `${Date.now()}-${index}`,
       particles: generateCelebrationParticles(sectionHeight, window.innerWidth < 768),
@@ -325,6 +319,7 @@ export default function WeddingCelebrationsSection() {
   const handleManuscriptTap = (index) => {
     if (activeScroll === index) {
       setActiveScroll(null)
+      setBouncingScroll(null)
       return
     }
 
@@ -333,11 +328,11 @@ export default function WeddingCelebrationsSection() {
     }
 
     setBouncingScroll(index)
+    triggerCinematicOpen(index)
 
     openTimeoutRef.current = window.setTimeout(() => {
       setBouncingScroll(null)
-      triggerCinematicOpen(index)
-    }, 280)
+    }, 340)
   }
 
   const visibleGoldDust = useMemo(
@@ -472,12 +467,12 @@ export default function WeddingCelebrationsSection() {
                   className="relative"
                   initial={false}
                   animate={
-                    bouncingScroll === index && !isOpen
+                    bouncingScroll === index
                       ? { scale: [1, 0.973, 1.015, 1], y: [0, 1.6, -1.2, 0] }
                       : { scale: 1, y: 0 }
                   }
                   transition={
-                    bouncingScroll === index && !isOpen
+                    bouncingScroll === index
                       ? {
                           duration: 0.34,
                           times: [0, 0.42, 0.76, 1],
@@ -504,7 +499,11 @@ export default function WeddingCelebrationsSection() {
                 <motion.div
                   className="pointer-events-none absolute left-[14%] right-[14%] top-[-0.48rem] z-30 h-[0.42rem] rounded-full border border-[#8a5d2f]/72 bg-[linear-gradient(to_bottom,#f0d39b_0%,#c78941_44%,#845426_100%)] shadow-[0_4px_8px_rgba(10,2,3,0.24)]"
                   initial={false}
-                  animate={{ opacity: isOpen ? 1 : 0, y: isOpen ? 0 : -6, filter: isOpen ? 'blur(0px)' : 'blur(4px)' }}
+                  animate={{
+                    opacity: isOpen ? 1 : 0,
+                    y: isOpen ? 0 : -6,
+                    ...(isMobile ? {} : { filter: isOpen ? 'blur(0px)' : 'blur(4px)' }),
+                  }}
                   transition={{ duration: 0.42, delay: isOpen ? 0.24 : 0, ease: cinematicEase }}
                   aria-hidden="true"
                 >
@@ -533,19 +532,19 @@ export default function WeddingCelebrationsSection() {
                       ? '0 34px 58px rgba(5,1,1,0.56), 0 0 42px rgba(227,174,92,0.26), inset 0 0 0 1px rgba(241,219,179,0.16)'
                       : 'none',
                   }}
-                  transition={{ duration: 0.9, ease: cinematicEase }}
+                  transition={{ duration: isMobile ? 0.62 : 0.9, ease: cinematicEase }}
                 >
-                  <AnimatePresence initial={false}>
-                    {!isOpen ? (
-                      <motion.div
-                        key="closed-scroll-shell"
-                        className="pointer-events-none absolute inset-x-[6%] top-[30%] z-20 h-[2.35rem] -translate-y-1/2 rounded-full border border-[#9a6936]/72 bg-[linear-gradient(to_bottom,#f2dfbe_0%,#e8cc9e_38%,#d8af77_100%)] shadow-[inset_0_1px_4px_rgba(255,245,222,0.45),inset_0_-2px_5px_rgba(92,56,24,0.26),0_8px_14px_rgba(8,2,3,0.34)]"
-                        initial={{ opacity: 0, scaleX: 0.96, filter: 'blur(4px)' }}
-                        animate={{ opacity: 1, scaleX: 1, filter: 'blur(0px)' }}
-                        exit={{ opacity: 0, scaleX: 0.98, filter: 'blur(4px)' }}
-                        transition={{ duration: 0.36, ease: cinematicEase }}
-                        aria-hidden="true"
-                      >
+                  <motion.div
+                    className="pointer-events-none absolute inset-x-[6%] top-[30%] z-20 h-[2.35rem] -translate-y-1/2 rounded-full border border-[#9a6936]/72 bg-[linear-gradient(to_bottom,#f2dfbe_0%,#e8cc9e_38%,#d8af77_100%)] shadow-[inset_0_1px_4px_rgba(255,245,222,0.45),inset_0_-2px_5px_rgba(92,56,24,0.26),0_8px_14px_rgba(8,2,3,0.34)]"
+                    initial={false}
+                    animate={{
+                      opacity: isOpen ? 0 : 1,
+                      scaleX: isOpen ? 0.985 : 1,
+                    }}
+                    transition={{ duration: isOpen ? 0.18 : 0.32, ease: cinematicEase }}
+                    style={{ visibility: isOpen ? 'hidden' : 'visible' }}
+                    aria-hidden={isOpen}
+                  >
                         <span className="absolute inset-x-[8%] top-[0.18rem] h-[1px] rounded-full bg-[#fff0cd]/70" />
                         <span className="absolute inset-x-[8%] bottom-[0.16rem] h-[1px] rounded-full bg-[#8e5a27]/32" />
 
@@ -568,9 +567,7 @@ export default function WeddingCelebrationsSection() {
                         <span className="pointer-events-none absolute inset-x-[18%] top-[72%] -translate-y-1/2 text-center font-subheading text-[0.44rem] uppercase tracking-[0.18em] text-[#6a4318]/72 drop-shadow-[0_1px_1px_rgba(255,240,200,0.35)]">
                           tap to open
                         </span>
-                      </motion.div>
-                    ) : null}
-                  </AnimatePresence>
+                  </motion.div>
 
                   <motion.div
                     className="pointer-events-none absolute inset-x-[16%] top-[0.8rem] h-[0.38rem] rounded-full bg-[linear-gradient(to_bottom,rgba(255,239,204,0.64),rgba(166,117,58,0.08))]"
@@ -583,7 +580,11 @@ export default function WeddingCelebrationsSection() {
                   <motion.div
                     className="pointer-events-none absolute left-[50%] top-[0.62rem] z-20 h-[1.5rem] w-[8.2rem] -translate-x-1/2"
                     initial={false}
-                    animate={{ opacity: isOpen ? 1 : 0, y: isOpen ? 0 : -6, filter: isOpen ? 'blur(0px)' : 'blur(4px)' }}
+                    animate={{
+                      opacity: isOpen ? 1 : 0,
+                      y: isOpen ? 0 : -6,
+                      ...(isMobile ? {} : { filter: isOpen ? 'blur(0px)' : 'blur(4px)' }),
+                    }}
                     transition={{ duration: 0.46, delay: isOpen ? 0.34 : 0, ease: cinematicEase }}
                     aria-hidden="true"
                   >
@@ -649,7 +650,7 @@ export default function WeddingCelebrationsSection() {
                       height: isOpen ? (isMobile ? '24.2rem' : '28.4rem') : '0rem',
                       opacity: isOpen ? 1 : 0,
                     }}
-                    transition={{ duration: isMobile ? 0.58 : 0.76, delay: isOpen ? 0.46 : 0, ease: cinematicEase }}
+                    transition={{ duration: isMobile ? 0.5 : 0.76, delay: isOpen ? (isMobile ? 0.12 : 0.46) : 0, ease: cinematicEase }}
                   >
                     <AnimatePresence initial={false}>
                       {isOpen ? (
