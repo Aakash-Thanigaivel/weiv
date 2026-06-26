@@ -858,6 +858,14 @@ body {
   }
 }
 
+.cinematic-pin-stack {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
 .cinematic-scene-layer {
   position: absolute;
   inset: 0;
@@ -1371,6 +1379,16 @@ body {
     background-position: center 38%;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
+    will-change: auto;
+  }
+
+  .cinematic-scene-layer {
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+
+  .cinematic-car-overlay-content {
+    will-change: auto;
   }
 
   .cinematic-car-wrapper {
@@ -1379,7 +1397,6 @@ body {
     bottom: -6svh;
     width: clamp(9.5rem, 50vw, 15.6rem);
     height: auto;
-    transform: translate3d(-50%, 0, 0);
     will-change: transform;
   }
 

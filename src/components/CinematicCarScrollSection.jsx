@@ -12,6 +12,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 export default function CinematicCarScrollSection() {
   const sectionRef = useRef(null)
+  const pinRef = useRef(null)
   const roadRef = useRef(null)
   const carWrapperRef = useRef(null)
   const namesRef = useRef(null)
@@ -23,7 +24,13 @@ export default function CinematicCarScrollSection() {
   }, [])
 
   useLayoutEffect(() => {
-    if (!sectionRef.current || !roadRef.current || !carWrapperRef.current || !namesRef.current) {
+    if (
+      !sectionRef.current ||
+      !pinRef.current ||
+      !roadRef.current ||
+      !carWrapperRef.current ||
+      !namesRef.current
+    ) {
       return undefined
     }
 
@@ -83,7 +90,6 @@ export default function CinematicCarScrollSection() {
           const introY = () => viewportHeight() * restFactor
           const introScale = startScale + 0.04
           const scrollY = () => viewportHeight() * scrollFactor
-          let introComplete = false
 
           const scrollTimeline = gsap.timeline({
             paused: true,
@@ -92,18 +98,13 @@ export default function CinematicCarScrollSection() {
               trigger: sectionRef.current,
               start: 'top top',
               end: isMobile ? '+=118%' : '+=200%',
-              pin: true,
+              pin: pinRef.current,
               pinSpacing: true,
               pinType: 'fixed',
               scrub: true,
               anticipatePin: 0,
               fastScrollEnd: false,
               invalidateOnRefresh: false,
-              onUpdate: (self) => {
-                if (isMobile && !introComplete) {
-                  self.scroll(self.start)
-                }
-              },
               onLeave: () => {
                 gsap.to(carWrapperRef.current, {
                   autoAlpha: 0,
@@ -117,9 +118,7 @@ export default function CinematicCarScrollSection() {
             },
           })
 
-          if (!isMobile) {
-            scrollTimeline.scrollTrigger.disable()
-          }
+          scrollTimeline.scrollTrigger.disable()
 
           scrollTimeline.fromTo(
             carWrapperRef.current,
@@ -162,7 +161,6 @@ export default function CinematicCarScrollSection() {
           const enableScroll = () => {
             if (cancelled || scrollReady) return
             scrollReady = true
-            introComplete = true
 
             gsap.set(carWrapperRef.current, {
               ...(centerCarWrapper
@@ -174,11 +172,7 @@ export default function CinematicCarScrollSection() {
               force3D: true,
             })
 
-            if (isMobile) {
-              scrollTimeline.progress(0)
-              return
-            }
-
+            scrollTimeline.progress(0)
             scrollTimeline.scrollTrigger.enable(false)
           }
 
@@ -240,28 +234,36 @@ export default function CinematicCarScrollSection() {
       }
     }, sectionRef)
 
-    const onViewportResize = () => {
-      if (window.matchMedia('(max-width: 767px)').matches) {
-        ScrollTrigger.refresh()
-      }
-    }
-
-    window.visualViewport?.addEventListener('resize', onViewportResize)
-
     return () => {
       cancelled = true
       introTimeline?.kill()
-      window.visualViewport?.removeEventListener('resize', onViewportResize)
       context.revert()
     }
   }, [])
 
   return (
     <section ref={sectionRef} className="cinematic-car-section" aria-label="Cinematic wedding car introduction">
-      <div className="cinematic-scene-layer" aria-hidden="true">
-        <div ref={roadRef} className="cinematic-road-layer" />
-        <div className="cinematic-road-bottom-filler" />
-        <div className="cinematic-road-atmosphere" />
+      <div ref={pinRef} className="cinematic-pin-stack">
+        <div className="cinematic-scene-layer" aria-hidden="true">
+          <div ref={roadRef} className="cinematic-road-layer" />
+          <div className="cinematic-road-bottom-filler" />
+          <div className="cinematic-road-atmosphere" />
+        </div>
+        <div className="cinematic-car-overlay-content" aria-hidden="true">
+          <h1 ref={namesRef} className="cinematic-couple-title" aria-label="Aakash loves Viji">
+            <span className="cinematic-couple-name cinematic-intro-line">Aakash</span>
+            <span className="cinematic-couple-heart cinematic-intro-line" aria-hidden="true">
+              ❤
+            </span>
+            <span className="cinematic-couple-name cinematic-intro-line">Viji</span>
+          </h1>
+          <div ref={saveDateGroupRef} className="cinematic-save-date-group">
+            <p className="cinematic-save-date-label">SAVE</p>
+            <p className="cinematic-save-date-label">THE</p>
+            <p className="cinematic-save-date-label">DATE</p>
+            <p className="cinematic-save-date-value">05/07/26</p>
+          </div>
+        </div>
       </div>
       <div className="cinematic-car-clip" aria-hidden="true">
         <div ref={carWrapperRef} className="cinematic-car-wrapper">
@@ -273,21 +275,6 @@ export default function CinematicCarScrollSection() {
             fetchPriority="high"
             decoding="async"
           />
-        </div>
-      </div>
-      <div className="cinematic-car-overlay-content" aria-hidden="true">
-        <h1 ref={namesRef} className="cinematic-couple-title" aria-label="Aakash loves Viji">
-          <span className="cinematic-couple-name cinematic-intro-line">Aakash</span>
-          <span className="cinematic-couple-heart cinematic-intro-line" aria-hidden="true">
-            ❤
-          </span>
-          <span className="cinematic-couple-name cinematic-intro-line">Viji</span>
-        </h1>
-        <div ref={saveDateGroupRef} className="cinematic-save-date-group">
-          <p className="cinematic-save-date-label">SAVE</p>
-          <p className="cinematic-save-date-label">THE</p>
-          <p className="cinematic-save-date-label">DATE</p>
-          <p className="cinematic-save-date-value">05/07/26</p>
         </div>
       </div>
     </section>

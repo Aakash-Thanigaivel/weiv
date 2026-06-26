@@ -53,7 +53,6 @@ export default function useMobileScrollOptimizations() {
 
     const onResize = () => {
       syncScrollMode()
-      ScrollTrigger.refresh()
     }
 
     window.addEventListener('scroll', syncScrollMode, { passive: true })
