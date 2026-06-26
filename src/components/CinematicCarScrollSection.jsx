@@ -83,6 +83,7 @@ export default function CinematicCarScrollSection() {
           const introY = () => viewportHeight() * restFactor
           const introScale = startScale + 0.04
           const scrollY = () => viewportHeight() * scrollFactor
+          let introComplete = false
 
           const scrollTimeline = gsap.timeline({
             paused: true,
@@ -98,6 +99,11 @@ export default function CinematicCarScrollSection() {
               anticipatePin: 0,
               fastScrollEnd: false,
               invalidateOnRefresh: false,
+              onUpdate: (self) => {
+                if (!introComplete) {
+                  self.scroll(self.start)
+                }
+              },
               onLeave: () => {
                 gsap.to(carWrapperRef.current, {
                   autoAlpha: 0,
@@ -111,7 +117,9 @@ export default function CinematicCarScrollSection() {
             },
           })
 
-          scrollTimeline.scrollTrigger.disable()
+          if (!isMobile) {
+            scrollTimeline.scrollTrigger.disable()
+          }
 
           scrollTimeline.fromTo(
             carWrapperRef.current,
@@ -155,18 +163,31 @@ export default function CinematicCarScrollSection() {
             if (cancelled || scrollReady) return
             scrollReady = true
 
+            const settledY = introY()
+            const settledScale = introScale
+
             gsap.set(carWrapperRef.current, {
               ...(centerCarWrapper
                 ? { xPercent: -50, left: '50%', x: 0 }
                 : { left: 0, right: 0, x: 0, xPercent: 0 }),
-              y: introY(),
-              scale: introScale,
+              y: settledY,
+              scale: settledScale,
               opacity: 1,
               force3D: true,
             })
 
+            gsap.set(roadRef.current, { clearProps: 'transform' })
+
+            scrollTimeline.invalidate()
             scrollTimeline.progress(0)
+
+            if (isMobile) {
+              introComplete = true
+              return
+            }
+
             scrollTimeline.scrollTrigger.enable(false)
+            introComplete = true
           }
 
           const playIntro = () => {

@@ -1369,14 +1369,18 @@ body {
     inset: -18% -3%;
     background-size: cover;
     background-position: center 38%;
-    transform: translate3d(0, 0, 0);
+    transform: none !important;
     backface-visibility: hidden;
     will-change: auto;
   }
 
   .cinematic-scene-layer {
-    transform: translate3d(0, 0, 0);
+    transform: none !important;
     will-change: auto;
+  }
+
+  .cinematic-road-atmosphere {
+    animation: none;
   }
 
   .cinematic-car-overlay-content {
