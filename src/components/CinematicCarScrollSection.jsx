@@ -57,8 +57,8 @@ export default function CinematicCarScrollSection() {
           const endScale = isMobile ? 1.03 : 1.07
           const viewportHeight = () => getViewportHeight()
           const titleLines = namesRef.current.querySelectorAll('.cinematic-intro-line')
-          const mobileCarStartY = () => viewportHeight() * 0.62
-          const introY = () => (isMobile ? 0 : viewportHeight() * restFactor)
+          const mobileCarStartY = () => viewportHeight() * 0.26
+          const introY = () => (isMobile ? viewportHeight() * 0.11 : viewportHeight() * restFactor)
           const introScale = startScale + 0.04
           const scrollY = () => viewportHeight() * scrollFactor
 
