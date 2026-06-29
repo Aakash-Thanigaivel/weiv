@@ -843,6 +843,76 @@ body {
   background: #17090d;
 }
 
+.cinematic-car-pin-spacer {
+  height: 0;
+  pointer-events: none;
+}
+
+@media (max-width: 767px) {
+  .cinematic-car-pin-spacer {
+    height: 320dvh;
+  }
+
+  .cinematic-car-section:not(.cinematic-car-section--past) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    z-index: 2;
+  }
+
+  .cinematic-car-section--past {
+    visibility: hidden;
+    height: 0;
+    min-height: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .cinematic-road-layer {
+    inset: 0;
+    background-size: cover;
+    background-position: center 38%;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .cinematic-scene-layer {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .cinematic-car-clip {
+    overflow: hidden;
+  }
+
+  .cinematic-car-wrapper {
+    inset: auto;
+    left: 50%;
+    bottom: 6svh;
+    width: clamp(9.5rem, 50vw, 15.6rem);
+    height: auto;
+    will-change: transform, opacity;
+  }
+
+  .cinematic-car-image {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    width: 100%;
+    max-width: none;
+    transform: none;
+    will-change: auto;
+  }
+
+  .cinematic-save-date-group {
+    bottom: 13.5svh;
+  }
+}
+
 @media (min-width: 768px) {
   .cinematic-scene-layer {
     transform: translate3d(0, 0, 0);
@@ -980,7 +1050,7 @@ body {
   transform: translateX(-50%);
   width: max-content;
   max-width: 86vw;
-  z-index: 1;
+  z-index: 6;
   overflow: hidden;
   clip-path: inset(100% 0% 0% 0%);
   will-change: clip-path;
@@ -1366,7 +1436,7 @@ body {
   }
 
   .cinematic-road-layer {
-    inset: -18% -3%;
+    inset: 0;
     background-size: cover;
     background-position: center 38%;
     transform: none !important;
@@ -1390,10 +1460,10 @@ body {
   .cinematic-car-wrapper {
     inset: auto;
     left: 50%;
-    bottom: -6svh;
+    bottom: 6svh;
     width: clamp(9.5rem, 50vw, 15.6rem);
     height: auto;
-    will-change: transform;
+    will-change: transform, opacity;
   }
 
   .cinematic-car-image {
@@ -1810,7 +1880,7 @@ body {
   }
 
   .cinematic-save-date-group {
-    bottom: 7.2svh;
+    bottom: 13.5svh;
     width: max-content;
     max-width: 90vw;
     gap: 0.06rem;
