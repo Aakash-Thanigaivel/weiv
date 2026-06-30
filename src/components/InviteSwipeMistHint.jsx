@@ -18,6 +18,21 @@ function isInCarZone() {
   return window.scrollY <= endScroll
 }
 
+function MistSwipeArrow() {
+  return (
+    <svg viewBox="0 0 24 24" className="invite-swipe-mist-arrow-icon" aria-hidden="true">
+      <path
+        d="M12 5.5 12 17M12 17 7.4 12.4M12 17 16.6 12.4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export default function InviteSwipeMistHint() {
   const [visible, setVisible] = useState(false)
   const idleTimerRef = useRef(null)
@@ -101,7 +116,15 @@ export default function InviteSwipeMistHint() {
     >
       <div className="invite-swipe-mist-fog invite-swipe-mist-fog--back" />
       <div className="invite-swipe-mist-fog invite-swipe-mist-fog--front" />
-      <p className="invite-swipe-mist-cloud">Swipe to explore more of our story</p>
+      <div className="invite-swipe-mist-cloud">
+        <span className="invite-swipe-mist-arrow">
+          <MistSwipeArrow />
+        </span>
+        <p className="invite-swipe-mist-label">Swipe Up To Explore More Of Our Story</p>
+        <span className="invite-swipe-mist-arrow">
+          <MistSwipeArrow />
+        </span>
+      </div>
     </div>
   )
 }

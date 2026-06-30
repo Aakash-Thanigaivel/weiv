@@ -2614,17 +2614,31 @@ body {
 
 .invite-swipe-mist-cloud {
   position: absolute;
+  left: 0;
+  right: 0;
+  top: 66%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: none;
+  padding: 0 0.35rem;
+  box-sizing: border-box;
+  animation: invite-swipe-mist-cloud-float 4.2s ease-in-out infinite alternate;
+}
+
+.invite-swipe-mist-label {
+  position: absolute;
   left: 50%;
-  top: 62%;
+  top: 50%;
   transform: translate(-50%, -50%);
+  width: min(11rem, 46vw);
   margin: 0;
-  max-width: min(18.5rem, calc(100vw - 2.5rem));
-  padding: 0.95rem 1.35rem;
-  background: transparent;
-  box-shadow: none;
   color: #4a2f22;
   font-family: 'Cormorant Garamond', Georgia, serif;
-  font-size: clamp(1.05rem, 4.2vw, 1.28rem);
+  font-size: clamp(0.88rem, 3.5vw, 1.12rem);
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0.02em;
@@ -2633,7 +2647,39 @@ body {
   text-shadow:
     0 1px 12px rgba(255, 252, 247, 0.85),
     0 0 24px rgba(255, 252, 247, 0.55);
-  animation: invite-swipe-mist-cloud-float 4.2s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.invite-swipe-mist-arrow {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  color: #5c3d2e;
+  filter: drop-shadow(0 1px 8px rgba(255, 252, 247, 0.75));
+  animation: invite-swipe-mist-arrow-bob 1.85s ease-in-out infinite;
+  z-index: 1;
+}
+
+.invite-swipe-mist-arrow:last-child {
+  animation-delay: 0.2s;
+}
+
+.invite-swipe-mist-arrow-icon {
+  width: 2.9rem;
+  height: 2.9rem;
+}
+
+@keyframes invite-swipe-mist-arrow-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(4px);
+  }
 }
 
 @keyframes invite-swipe-mist-drift-a {
@@ -2658,11 +2704,11 @@ body {
 
 @keyframes invite-swipe-mist-cloud-float {
   from {
-    transform: translate(-50%, calc(-50% + 2px));
+    transform: translateY(calc(-50% + 2px));
   }
 
   to {
-    transform: translate(-50%, calc(-50% - 3px));
+    transform: translateY(calc(-50% - 3px));
   }
 }
 
@@ -2674,7 +2720,8 @@ body {
 
 @media (prefers-reduced-motion: reduce) {
   .invite-swipe-mist-fog,
-  .invite-swipe-mist-cloud {
+  .invite-swipe-mist-cloud,
+  .invite-swipe-mist-arrow {
     animation: none !important;
   }
 }
