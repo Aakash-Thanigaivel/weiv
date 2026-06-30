@@ -1,6 +1,7 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import InvitePicture from './InvitePicture'
+import SectionScrollCue from './SectionScrollCue'
 import useSectionNearView from '../hooks/useSectionNearView'
 import { isMobileViewport, preloadFamilySlide } from '../utils/performance'
 
@@ -218,6 +219,7 @@ export default function GroomsFamilySection() {
           With Love &amp; Blessings
         </p>
       </motion.div>
+      <SectionScrollCue />
     </section>
   )
 }

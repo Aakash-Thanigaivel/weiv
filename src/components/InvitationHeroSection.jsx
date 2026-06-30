@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { motion } from 'framer-motion'
+import SectionScrollCue from './SectionScrollCue'
 import useCountdown from '../hooks/useCountdown'
 import { spawnCursorSparkle } from '../utils/particles'
 
@@ -105,6 +106,7 @@ export default function InvitationHeroSection() {
         </motion.div>
 
       </motion.div>
+      <SectionScrollCue />
     </section>
   )
 }

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import SectionScrollCue from './SectionScrollCue'
 import { isMobileViewport } from '../utils/performance'
 
 const storyImages = [
@@ -340,6 +341,7 @@ export default function OurStory() {
           )}
         </div>
       </div>
+      <SectionScrollCue />
     </section>
   )
 }

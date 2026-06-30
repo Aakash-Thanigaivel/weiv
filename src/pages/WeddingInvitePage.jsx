@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import BackgroundMusic from '../components/BackgroundMusic'
 import CinematicCarScrollSection from '../components/CinematicCarScrollSection'
+import InviteSwipeMistHint from '../components/InviteSwipeMistHint'
 import FloatingHeartTransition from '../components/FloatingHeartTransition'
 import InvitationHeroSection from '../components/InvitationHeroSection'
 import InviteSectionFallback from '../components/InviteSectionFallback'
@@ -40,6 +41,7 @@ export default function WeddingInvitePage() {
         ))}
       </div>
       <BackgroundMusic />
+      <InviteSwipeMistHint />
       <motion.main
         className="invite-main relative z-20"
         initial={{ opacity: 0 }}

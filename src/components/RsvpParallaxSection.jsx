@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import SectionScrollCue from './SectionScrollCue'
 
 const cinematicEase = [0.22, 1, 0.36, 1]
 
@@ -254,6 +255,7 @@ export default function RsvpParallaxSection() {
           </motion.div>
         )}
       </AnimatePresence>
+      <SectionScrollCue />
     </section>
   )
 }

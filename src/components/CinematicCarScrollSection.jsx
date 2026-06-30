@@ -7,6 +7,7 @@ import {
   preloadCelebrationAssets,
   preloadStoryAssets,
 } from '../utils/performance'
+import SectionScrollCue from './SectionScrollCue'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -345,6 +346,7 @@ export default function CinematicCarScrollSection() {
           <p className="cinematic-save-date-value">05/07/26</p>
         </div>
       </div>
+      <SectionScrollCue />
     </section>
     </>
   )

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import InvitePicture from './InvitePicture'
+import SectionScrollCue from './SectionScrollCue'
 import useSectionNearView from '../hooks/useSectionNearView'
 import { isMobileViewport } from '../utils/performance'
 
@@ -866,6 +867,7 @@ export default function WeddingCelebrationsSection() {
           })}
         </div>
       </div>
+      <SectionScrollCue />
     </section>
   )
 }
