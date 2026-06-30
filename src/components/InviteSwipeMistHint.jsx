@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { isMobileViewport } from '../utils/performance'
 
-const IDLE_MS = 1000
+const IDLE_MS = 3000
 const INTRO_GRACE_MS = 2600
 
 function isInCarZone() {

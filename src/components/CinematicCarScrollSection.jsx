@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import {
@@ -18,6 +18,10 @@ export default function CinematicCarScrollSection() {
   const carWrapperRef = useRef(null)
   const namesRef = useRef(null)
   const saveDateGroupRef = useRef(null)
+  const carCueUnlockedRef = useRef(false)
+  const [carCueUnlocked, setCarCueUnlocked] = useState(
+    () => window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+  )
 
   useEffect(() => {
     void getCarLoadPromise()
@@ -101,6 +105,29 @@ export default function CinematicCarScrollSection() {
 
           let introComplete = false
 
+          const syncCarCueUnlock = () => {
+            if (!introComplete || !carWrapperRef.current) {
+              if (carCueUnlockedRef.current) {
+                carCueUnlockedRef.current = false
+                setCarCueUnlocked(false)
+              }
+              return
+            }
+
+            const startY = introY()
+            const endY = scrollY()
+            const currentY = Number(gsap.getProperty(carWrapperRef.current, 'y'))
+            const range = endY - startY
+            const carProgress =
+              Math.abs(range) < 1 ? 1 : gsap.utils.clamp(0, 1, (currentY - startY) / range)
+            const unlocked = carProgress >= 0.5
+
+            if (carCueUnlockedRef.current !== unlocked) {
+              carCueUnlockedRef.current = unlocked
+              setCarCueUnlocked(unlocked)
+            }
+          }
+
           const scrollTimeline = gsap.timeline({
             paused: true,
             defaults: { ease: 'none' },
@@ -119,6 +146,8 @@ export default function CinematicCarScrollSection() {
                 if (!introComplete) {
                   self.scroll(self.start)
                 }
+
+                syncCarCueUnlock()
               },
               onLeave: () => {
                 if (isMobile) {
@@ -137,6 +166,7 @@ export default function CinematicCarScrollSection() {
                 }
 
                 gsap.set(carWrapperRef.current, { autoAlpha: 1 })
+                syncCarCueUnlock()
               },
             },
           })
@@ -229,6 +259,7 @@ export default function CinematicCarScrollSection() {
 
             if (isMobile) {
               introComplete = true
+              syncCarCueUnlock()
               return
             }
 
@@ -237,6 +268,7 @@ export default function CinematicCarScrollSection() {
 
             scrollTimeline.scrollTrigger.enable(false)
             introComplete = true
+            syncCarCueUnlock()
           }
 
           const playIntro = () => {
@@ -305,6 +337,8 @@ export default function CinematicCarScrollSection() {
     return () => {
       cancelled = true
       introTimeline?.kill()
+      carCueUnlockedRef.current = false
+      setCarCueUnlocked(false)
       sectionRef.current?.classList.remove('cinematic-car-section--past')
       context.revert()
     }
@@ -313,7 +347,11 @@ export default function CinematicCarScrollSection() {
   return (
     <>
     <div ref={pinSpacerRef} className="cinematic-car-pin-spacer" aria-hidden="true" />
-    <section ref={sectionRef} className="cinematic-car-section" aria-label="Cinematic wedding car introduction">
+    <section
+      ref={sectionRef}
+      className="cinematic-car-section"
+      aria-label="Cinematic wedding car introduction"
+    >
       <div className="cinematic-scene-layer" aria-hidden="true">
         <div ref={roadRef} className="cinematic-road-layer" />
         <div className="cinematic-road-bottom-filler" />
@@ -346,7 +384,7 @@ export default function CinematicCarScrollSection() {
           <p className="cinematic-save-date-value">05/07/26</p>
         </div>
       </div>
-      <SectionScrollCue />
+      <SectionScrollCue show={carCueUnlocked} />
     </section>
     </>
   )

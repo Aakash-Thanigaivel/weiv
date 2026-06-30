@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from 'react'
-
 function SectionScrollArrow() {
   return (
     <svg viewBox="0 0 24 24" className="section-scroll-cue-icon" aria-hidden="true">
@@ -15,40 +13,11 @@ function SectionScrollArrow() {
   )
 }
 
-export default function SectionScrollCue() {
-  const hostRef = useRef(null)
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    const host = hostRef.current
-    if (!host) return undefined
-
-    const section = host.closest('section')
-    if (!section) {
-      setVisible(true)
-      return undefined
-    }
-
-    const updateVisibility = ([entry]) => {
-      if (!entry) return
-      setVisible(entry.isIntersecting && entry.intersectionRatio >= 0.28)
-    }
-
-    const observer = new IntersectionObserver(updateVisibility, {
-      threshold: [0, 0.28, 0.45, 0.65, 0.85],
-    })
-
-    observer.observe(section)
-
-    return () => observer.disconnect()
-  }, [])
+export default function SectionScrollCue({ show = true }) {
+  if (!show) return null
 
   return (
-    <div
-      ref={hostRef}
-      className={`section-scroll-cue-host${visible ? ' section-scroll-cue-host--visible' : ''}`}
-      aria-hidden={!visible}
-    >
+    <div className="section-scroll-cue-host" aria-hidden="false">
       <div className="section-scroll-cue">
         <span className="section-scroll-cue-arrow">
           <SectionScrollArrow />
